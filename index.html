@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resurrection City 3D</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
+    <link rel="stylesheet" href="./style/style.css">
+</head>
+<body>
+    <!--Navbar-->
+    <nav class="navbar">
+        <div class="logo-title">
+            <a href="#">
+                <img src="assets/icons/Tent_Icon.png" alt="">
+                <p>Resurrection City<span>Three Dimensions</span></p>
+            </a>
+        </div>
+
+        <ul class="nav-items">
+            <li class="nav-item">
+                <a href="#" class="nav-link">Imagining</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Planning & Building</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Living & Leaving</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Afterlives</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">About</a>
+            </li>
+        </ul>
+    </nav>
+    <!--End Navbar-->
+
+    <!--Splash Page-->
+
+    <!-- <div class="splash-container">
+        <div class="splash-inner">
+            <div class="splash-title">
+                <img src="assets/icons/Tent_Icon.png" alt="">
+                <div class="splash-title-text">
+                    <p>Resurrection City</p><p>Digital Atlas</p>
+                </div>
+            </div>
+            <div class="panel-line"></div>
+            <p>Resurrection City was the product of a truly national movement of activists building on the African American civil rights protests of the 1950s-60s. This represented a multiracial movement, championed by recently assassinated Dr. Martin Luther King Jr. and realized by the thousands of residents in Resurrection City. Newspapers, radio programs, television stations, photographers, and independent journalists from across the country traveled to cover Resurrection City and the Poor People's Campaign.</p>
+            <p>While Resurrection City was emerging on the Mall, what was the rest of the US hearing and what did they think about it? What were folks reading and seeing in your hometown?</p>
+            <button type="button" class="splash-btn">Go to the Atlas</button>
+        </div>
+    </div> -->
+
+    <!--End Splash Page-->
+
+    <!--Panel Buttons-->
+
+    <div class="left-panel-btn-container">
+        <div id="panel-btn" class="panel-btn">
+            <i class="fa-solid fa-gear"></i>
+        </div>
+
+        <div id="help-btn" class="help-btn">
+            <i class="fa-solid fa-question"></i>
+        </div>
+    </div>
+
+    <div id="zoomButtons" class="right-panel-btn-container">
+        <div id="zoom-in-btn" class="zoom-in-btn">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+
+        <div id="zoom-out-btn" class="zoom-out-btn">
+            <i class="fa-solid fa-minus"></i>
+        </div>
+    </div>
+
+    <!-- Timeline Container -->
+
+    <div class="timeline">
+        <div class="timeline-container">
+            <div id="progressContainer">
+                    <div id="progressBar"></div>
+            </div>
+            <div class="timeline-buttons-date">
+                <div class="timeline-buttons">
+                    <button class="timeline-btn" id="startBtn">Start</button>
+                    <button class="timeline-btn" id="pauseBtn">Pause</button>
+                    <button class="timeline-btn" id="resetBtn">Reset</button>
+                </div>
+                <div class="timeline-date">
+                    <p class="automated-date">May 13, 1968</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Side Panel-->
+
+    <div class="side-panel">
+        <div class="title-close">
+            <div class="title-logo">
+                <!-- <img src="assets/icons/Tent_Icon.png" alt=""> -->
+                <h3>Legend & Tools</h3>
+            </div>        
+            <i id="panel-close" class="fa-solid fa-close"></i>
+        </div>
+        <div class="panel-line"></div>
+        <div class="side-panel-text">
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus, ex quas minus earum ipsam velit cumque cum officia sunt quos! Sunt architecto libero autem consequatur ab nemo quidem nisi minima, ex facilis nam expedita repellat eum totam similique quae quaerat delectus in aliquam officiis veritatis? Porro hic obcaecati repellendus, quo ullam modi quis exercitationem dolor ad. Expedita ea veritatis distinctio iste eum dolores saepe ducimus molestias totam corrupti, rem fugit minima magnam nostrum sed neque, non nobis enim debitis. Modi architecto suscipit officia, consectetur quidem enim impedit eos provident porro voluptatem repudiandae assumenda dicta rem quo dolorem iusto veniam voluptatibus!</p>
+            
+            <div class="controls">
+                <div>
+                    <p>Turn on labels</p>
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" id="labelSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <p>Change the weather</p>
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" id="weatherSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <p>See a picture</p>
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" id="pictureSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <p>Toggle Timeline</p>
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" id="timelineSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--End Side Panel-->
+
+    <!--Help Panel-->
+
+    <!-- <div id="help-btn" class="help-btn">
+        <i class="fa-solid fa-question"></i>
+    </div> -->
+
+    <div id="help-panel" class="help-panel">
+        <div class="title-close">
+            <div class="title-logo">
+                <!-- <img src="assets/icons/Tent_Icon.png" alt=""> -->
+                <h3>Using the App</h3>
+            </div>
+            <i id="help-close" class="fa-solid fa-close"></i>
+        </div>
+        <div class="panel-line"></div>
+        <div class="help-panel-text">
+            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam cum maiores veritatis necessitatibus exercitationem magni itaque culpa molestiae nemo cupiditate sint, ad, numquam, quidem ut. Dicta accusantium eum temporibus sunt neque illum iste, aliquam atque cumque quis ea? Labore distinctio dolor architecto animi exercitationem suscipit? A delectus laboriosam, aperiam impedit voluptates excepturi suscipit illo quibusdam similique ducimus, placeat animi ab dignissimos harum, sit quis. Necessitatibus quaerat minus non quia totam, est asperiores temporibus ea earum delectus nostrum ex, libero, magni iusto? Explicabo sint repellendus error mollitia dicta assumenda. Repellat laudantium nobis quae corrupti officiis numquam alias ad molestiae illo! Laborum.</p>
+            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam cum maiores veritatis necessitatibus exercitationem magni itaque culpa molestiae nemo cupiditate sint, ad, numquam, quidem ut. Dicta accusantium eum temporibus sunt neque illum iste, aliquam atque cumque quis ea? Labore distinctio dolor architecto animi exercitationem suscipit? A delectus laboriosam, aperiam impedit voluptates excepturi suscipit illo quibusdam similique ducimus, placeat animi ab dignissimos harum, sit quis. Necessitatibus quaerat minus non quia totam, est asperiores temporibus ea earum delectus nostrum ex, libero, magni iusto? Explicabo sint repellendus error mollitia dicta assumenda. Repellat laudantium nobis quae corrupti officiis numquam alias ad molestiae illo! Laborum.</p>
+            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam cum maiores veritatis necessitatibus exercitationem magni itaque culpa molestiae nemo cupiditate sint, ad, numquam, quidem ut. Dicta accusantium eum temporibus sunt neque illum iste, aliquam atque cumque quis ea? Labore distinctio dolor architecto animi exercitationem suscipit? A delectus laboriosam, aperiam impedit voluptates excepturi suscipit illo quibusdam similique ducimus, placeat animi ab dignissimos harum, sit quis. Necessitatibus quaerat minus non quia totam, est asperiores temporibus ea earum delectus nostrum ex, libero, magni iusto? Explicabo sint repellendus error mollitia dicta assumenda. Repellat laudantium nobis quae corrupti officiis numquam alias ad molestiae illo! Laborum.</p>
+        </div>
+    </div>
+
+    <!--End Help Panel-->
+
+    <!--Popup-->
+
+    <div class="popup" id="cardId">
+        <div class="popup-container">
+            <img src="./assets/images/placeholder2.jpg" class="app-image" id="popup-image-id">
+        </div>
+    </div>
+
+    <!--End Popup-->
+
+    <!--Transcript Modal-->
+
+
+    <!--End Transcript Modal-->
+
+    <div class="modal-container" id="transcript-modal">
+        <div class="modal-inner">
+            <a href="#" class="modal-close" id="transcript-close">
+                <i class="fa-solid fa-close"></i>
+            </a>
+            <h3 class="modal-transcript-title">Title</h3>
+            <div class="panel-line"></div>
+            <div class="modal-transcript-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!--About Modal-->
+
+    <div class="modal-container" id="about-modal">
+        <div class="modal-inner">
+            <a href="#" class="modal-close" id="about-close">
+                <i class="fa-solid fa-close"></i>
+            </a>
+            <h3>About the Project</h3>
+            <div class="panel-line"></div>
+            <div">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea pariatur, natus inventore vero provident quidem cum doloremque ex rerum et nemo esse ratione tempore nesciunt quo eos, facere sed perferendis. Quisquam voluptates quia eius ullam alias enim, provident soluta dolorum velit quod eum aspernatur modi inventore ipsum, dolores aliquid. Laborum voluptates magnam aliquam? Culpa corporis sed id, voluptatibus quis porro aut hic natus. Eligendi vitae nostrum quod ut pariatur ipsum sapiente error itaque blanditiis qui rem tempora expedita similique natus eius sint unde dolorum, alias numquam consequuntur dolorem magni amet cum animi? Omnis repellat illum id ullam, nisi exercitationem libero debitis totam voluptas minima architecto quam dolor ducimus sint molestiae sit? Tempora incidunt modi quas voluptatem. Minima placeat, quidem quibusdam totam quam illum est consequuntur assumenda. Minima vero suscipit nobis omnis commodi dicta magnam! Minus vel tenetur sint, minima quae, ad quas rerum saepe iusto alias optio ea nesciunt ducimus!</p>
+            </div>
+        </div>
+    </div>
+
+    <!--End About Modal-->
+
+    <!--Picture Modal-->
+
+    <div class="modal-container" id="img-modal">
+        <div class="modal-inner">
+            <a href="#" class="modal-close" id="img-close">
+                <i class="fa-solid fa-close"></i>
+            </a>
+            <img id="neatModalImg" src="" alt="" data="">
+            <span id="img-caption"></span>
+        </div>
+    </div>
+
+    <!--End Picture Modal-->
+
+    <div id="viewDiv"></div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://js.arcgis.com/4.32/"></script>
+    <script src="/script/labels.js"></script>
+    <script src="/script/renderers.js"></script>
+    <script type="module" src="./script/script.js"></script>
+</body>
+</html>
