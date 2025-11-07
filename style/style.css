@@ -6,12 +6,12 @@
 
 @font-face {
   font-family: 'MartinDisplayBold';
-  src: url('/assets/fonts/VTCMartinDisplay-XBold.woff2') format('woff2'),
+  src: url('../assets/fonts/VTCMartinDisplay-XBold.woff2') format('woff2'),
 }
 
 @font-face {
   font-family: 'MartinDisplayBoldForward';
-  src: url('/assets/fonts/VTCMartinDisplay-XBoldForward.woff2') format('woff2'),
+  src: url('../assets/fonts/VTCMartinDisplay-XBoldForward.woff2') format('woff2'),
 }
 
 :root {
