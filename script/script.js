@@ -117,6 +117,16 @@ $('#labelSwitch').change(function(){
   }
 })
 
+/***Toggle Tree Layer***/
+
+$('#treeSwitch').change(function(){
+  if ($(this).is(':checked')) {
+    rcTrees.visible = false;
+  } else {
+    rcTrees.visible = true;
+  }
+})
+
 /***Change weather***/
 
 $('#weatherSwitch').change(function(){
