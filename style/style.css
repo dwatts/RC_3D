@@ -26,6 +26,9 @@
   --Background-Blue-Dark: rgba(72, 120, 112, 0.9);
   --Maroon: #730900;
   --Dark-Brown: #402e32;
+  --calcite-color-text-3: white;
+  --calcite-color-foreground-2: var(--Dark-Brown);
+  --calcite-color-text-1: #fff;
 }
 
 * {
@@ -164,7 +167,7 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: space-between;
     margin-left: 3rem;
-    width: 34rem;
+    width: 36rem;
 }
 
 .logo-title img {
@@ -242,7 +245,7 @@ input:checked + .slider:before {
     position: absolute;
     bottom: 2rem;
     right: 2rem;
-    width: 6rem;
+    width: 9.5rem;
     height: auto;
     display: flex;
     align-items: center;
@@ -289,10 +292,32 @@ input:checked + .slider:before {
     transform: translateY(-0.09rem);
 }
 
+/* Style Compass Widget Icon */
+
+.esri-widget--button {
+    z-index: 1;
+    height: 2.5rem;
+    width: 2.5rem;
+    background-color: var(--Background-Blue);
+    transition: all .3s;
+}
+
+.esri-widget--button:hover {
+    transform: translateY(-0.09rem);
+}
+
+.esri-widget--button .interaction-container:hover {
+    background-color: var(--Dark-Brown) !important;
+}
+
+.esri-compass:hover {
+    color: var(--Dark-Brown) !important;
+}
+
 /*Splash Page*/
 
 .splash-container {
-    background-image: url("../assets/images/MediaSplash.png");
+    background-image: url("../assets/images/RC_Aerial_2.jpg");
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
@@ -304,6 +329,8 @@ input:checked + .slider:before {
     z-index: 3;
     position: absolute;
     display: none;
+    align-items: center;
+    justify-content: center;
 }
 
 .splash-inner {
@@ -311,10 +338,6 @@ input:checked + .slider:before {
     height: auto;
     background: linear-gradient(var(--Background), var(--Background-Alt));
     padding: 1.5rem;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    position: relative;
     border-radius: .5rem;
 }
 
@@ -359,6 +382,7 @@ input:checked + .slider:before {
     padding-bottom: .245rem;
 }
 
+
 /*Adjust splash paragraph text font weight*/
 
 .splash-inner p {
@@ -368,26 +392,76 @@ input:checked + .slider:before {
 /*End font weight adjustment*/
 
 .splash-btn {
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     height:2rem;
     width:10rem;
     border-radius: .5rem;
-    background-color: var(--Dark-Brown);
+    background-color: var(--Background);
     transition: all .3s;
     z-index: 2;
     border:none;
     color: #fff;
     font-family: var(--Bodoni);
     font-size: .8rem;
-    /* margin: 1rem 0; */
 }
 
 .splash-btn:hover {
     background-color: var(--Background);
     transform: translateY(-0.05rem);
+}
+
+/* Loading / Loaded Button Text */
+
+.splash-loading-text {
+    display: flex;
+}
+
+.splash-loaded-text {
+    display: none;
+}
+
+/* Loading Ellipses for Splash Button*/
+
+.spinner {
+  margin-left: .3rem;
+  padding-top: .3rem;
+  width: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.spinner > div {
+  width: .3rem;
+  height: .3rem;
+  background-color: #fff;
+  border-radius: 100%;
+  display: inline-block;
+  animation: sk-bouncedelay 1.2s infinite ease-in-out both;
+}
+.spinner .bounce1 {
+  animation-delay: -0.4s;
+}
+.spinner .bounce2 {
+  animation-delay: -0.2s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
 }
 
 /*End Splash Page*/
@@ -776,6 +850,16 @@ input:checked + .slider:before {
     opacity: 0.85;
 }
 
+.popup-text {
+    font-family: var(--Bodoni);
+    font-size: .9rem;
+    font-weight: 400;
+    color: var(--Dark-Brown);
+    line-height: 1.35rem;
+    letter-spacing: .02rem;
+    padding-top: .3rem;
+} */
+
 /*.popup .panel-line {
     margin: 0;
 }
@@ -816,15 +900,5 @@ input:checked + .slider:before {
 .place-date-container {
     display: flex;
 }
-
-.details {
-    font-family: var(--Bodoni);
-    font-size: .9rem;
-    font-weight: 400;
-    color: var(--Dark-Brown);
-    line-height: 1.35rem;
-    letter-spacing: .02rem;
-    padding-top: .3rem;
-} */
 
 /***End General Popup Styling***/

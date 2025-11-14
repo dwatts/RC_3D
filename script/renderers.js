@@ -36,6 +36,28 @@ const dcBuildingsRenderer = {
     }
 };
 
+//New Deal Building Label Point Renderer
+
+var newDealPointRenderer = {
+  type: "simple",
+  symbol: {
+    type: "point-3d", 
+      symbolLayers: [
+        {
+          type: "icon",
+          material: {
+            color: [99, 99, 99]
+          },
+          size: 0,
+          outline: {
+            color: "#404040",
+            size: 1
+          }
+        }
+      ]
+    }
+};
+
 //RC Structure Renderer
 
 //***********General Edge Renderer**********//

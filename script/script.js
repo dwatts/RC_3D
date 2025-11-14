@@ -6,6 +6,8 @@ const TileLayer = await $arcgis.import("@arcgis/core/layers/TileLayer.js");
 const VectorTileLayer = await $arcgis.import("@arcgis/core/layers/VectorTileLayer.js");
 const Basemap = await $arcgis.import("@arcgis/core/Basemap.js");
 const FeatureFilter = await $arcgis.import("@arcgis/core/layers/support/FeatureFilter.js");
+const Compass = await $arcgis.import("@arcgis/core/widgets/Compass.js");
+const reactiveUtils = await $arcgis.import("@arcgis/core/core/reactiveUtils.js");
 
 const Graphic = await $arcgis.import("@arcgis/core/Graphic.js");
 const GraphicsLayer = await $arcgis.import("@arcgis/core/layers/GraphicsLayer.js");
@@ -27,6 +29,44 @@ $('.app-image').click(function (e) {
   $('#img-modal').fadeIn(500);
   $('#img-caption').html(caption);
 });
+
+/***Fade in Splash Screen on Load***/
+
+$(document).ready(function(){
+    $(".splash-container")
+    .css("display", "flex")
+    .hide()
+    .fadeIn();
+});
+
+
+//Splash button initially disabled until DC Buildings layer loads
+
+const splashButton = document.querySelector(".splash-btn");
+
+splashButton.disabled = true;
+
+/***Close Splash Screen***/
+
+$('.splash-btn').click(function () {
+    $('.splash-container').fadeOut(700);
+    view.goTo({
+        position: {
+          spatialReference: {
+            // latestWkid: 3857,
+            wkid: 3857
+          },
+           x: -8577663.253492767,
+          y: 4705478.411412261,
+          z: 151.3735215915367
+        },
+        heading: 79.01463482473405,
+        tilt: 81.57362053851135
+    }, {
+      duration: 7000
+    });
+    startIntroAnimation();
+})
 
 /***Trigger About Modal***/
 
@@ -70,8 +110,10 @@ $('#help-close').click(function(){
 $('#labelSwitch').change(function(){
   if ($(this).is(':checked')) {
     rcStructures.labelingInfo = [structureUseLabel]
+    newDealBuildingsLabelPoint.labelingInfo = [newDealLabel]
   } else {
     rcStructures.labelingInfo = [""]
+    newDealBuildingsLabelPoint.labelingInfo = [""]
   }
 })
 
@@ -124,6 +166,7 @@ $('#pictureSwitch').change(function(){
 $('#timelineSwitch').change(function(){
   if ($(this).is(':checked')) {
     $('.timeline').addClass('show');
+    resetAnimation();
   } else {
     $('.timeline').removeClass('show');
   }
@@ -150,6 +193,12 @@ const newDealBuildings = new SceneLayer({
   renderer: dcBuildingsRenderer,
   popupEnabled: false
 });
+
+const newDealBuildingsLabelPoint = new FeatureLayer({
+  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/New_Deal_Building_Label/FeatureServer",
+  labelingInfo: [""],
+  renderer: newDealPointRenderer
+})
 
 const rcTrees = new SceneLayer({                    
   url:"https://tiles.arcgis.com/tiles/njxlOVQKvDzk10uN/arcgis/rest/services/RC_Trees_Expanded/SceneServer",
@@ -209,6 +258,10 @@ const planeGraphic = new Graphic({
   })
 });
 
+planeGraphic.attributes = {
+  "caption": "This is a test caption for the planeGraphic"
+};
+
 graphicsLayer.addMany([planeGraphic]);
 
 /***Basemap Layers***/
@@ -234,7 +287,7 @@ const map = new WebScene({
     basemap: customBasemap,
     // basemap: "topo-3d",
     ground: "world-elevation",
-    layers: [rcStructures, graphicsLayer, mallGroundCover, rcTrees, newDealBuildings, dcBuildings],
+    layers: [rcStructures, graphicsLayer, mallGroundCover, rcTrees, newDealBuildingsLabelPoint, newDealBuildings, dcBuildings],
 });
 
 map.ground.opacity = 1;
@@ -263,17 +316,15 @@ const view = new SceneView({
     camera: {
         position: {
           spatialReference: {
-            // latestWkid: 3857,
-            // wkid: 102100
             wkid: 3857
           },
-          x: -8577663.253492767,
-          y: 4705478.411412261,
-          z: 151.3735215915367
+          x: -8578333.504165262,
+          y: 4705456.0978203695,
+          z: 183.14629888907075
         },
-        heading: 79.01463482473405,
-        tilt: 81.57362053851135 
-      },
+        heading: 86.97859465761329,
+        tilt: 83.64442210800793 
+    },
     environment: {
       lighting: {
           directShadowsEnabled: true
@@ -290,11 +341,27 @@ view.environment.weather = {
   cloudCover: 0.5  
 };
 
+/***Add Compass Widget***/
+
+const zoomButtonsDiv = document.getElementById("zoomButtons");
+
+const compassWidget = new Compass({
+  view: view, 
+  container: zoomButtonsDiv
+});
+
 /***Custom Zoom In/Out Buttons***/
 
 function changeZoom(delta) {
-  const targetZoom = view.zoom + delta;
-  view.goTo({ zoom: targetZoom }, { duration: 400, easing: "ease-in-out" });
+  const camera = view.camera.clone();
+  const scale = delta > 0 ? 0.7 : 1.3;
+  const newPos = camera.position.clone();
+  newPos.x = (newPos.x - view.center.x) * scale + view.center.x;
+  newPos.y = (newPos.y - view.center.y) * scale + view.center.y;
+  newPos.z = (newPos.z - view.center.z) * scale + view.center.z;
+  
+  camera.position = newPos;
+  view.goTo(camera, { duration: 500, easing: "ease-in-out" });
 }
 
 document.getElementById("zoom-in-btn").addEventListener("click", () => {
@@ -322,6 +389,9 @@ view.on("pointer-move", (event) => {
 
 /***Start Popup HitTest Functionality***/
 
+let popupImgUrl = document.getElementById('popup-image-id');
+let popupText = document.querySelector('.popup-text')
+
 let highlight;
 
 view.on("immediate-click", (event) => {
@@ -332,6 +402,11 @@ view.on("immediate-click", (event) => {
     
       $('#cardId').fadeIn();
       $('#cardId').css('display','flex');
+
+      /***Add Popup Content***/
+
+      popupImgUrl.src="./assets/images/placeholder2.jpg";
+      popupText.innerHTML = "";
 
       /***Highlight points functionality***/
 
@@ -344,6 +419,16 @@ view.on("immediate-click", (event) => {
 
       
 
+    } else if (hitResult.results.find(r => r.graphic === planeGraphic)) {
+
+      console.log(planeGraphic.attributes.caption);
+      
+      $('#cardId').fadeIn();
+      $('#cardId').css('display','flex');
+
+      popupImgUrl.src = "./assets/images/Image3.jpg";
+      popupText.innerHTML = String(planeGraphic.attributes.caption);
+    
     } else {
         $('#cardId').fadeOut();
         highlight?.remove();
@@ -356,17 +441,17 @@ view.on("immediate-click", (event) => {
 
 /***View Coordinates***/
 
-view.watch('camera.position', function(newValue, oldValue, property, object) {
-  console.log(property , newValue);
-});
+// view.watch('camera.position', function(newValue, oldValue, property, object) {
+//   console.log(property , newValue);
+// });
 
-view.watch('camera.heading', function(newValue, oldValue, property, object) {
-  console.log(property , newValue);
-});
+// view.watch('camera.heading', function(newValue, oldValue, property, object) {
+//   console.log(property , newValue);
+// });
 
-view.watch('camera.tilt', function(newValue, oldValue, property, object) {
-  console.log(property , newValue);
-});
+// view.watch('camera.tilt', function(newValue, oldValue, property, object) {
+//   console.log(property , newValue);
+// });
 
 /***Timeline Animation***/
 
@@ -393,8 +478,6 @@ view.whenLayerView(rcStructures).then(async (lv) => {
 
   const result = await rcStructures.queryFeatures(query);
   maxValue = result.features[0].attributes.max_seq || 100;
-
-  console.log(maxValue);
 });
 
 //Update Progress Bar
@@ -425,9 +508,32 @@ function updateDateText () {
   }
 }
 
-//Start Animation Button
+//Intro Animation Sequence 
+
+function startIntroAnimation() {
+
+  if (!layerView) return;
+
+  clearInterval(animationInterval);
+
+  animationInterval = setInterval(() => {
+    currentValue++;
+    if (currentValue > maxValue) {
+      clearInterval(animationInterval);
+      return;
+    }
+
+    layerView.filter = {
+      where: `${sequenceField} <= ${currentValue}`
+    };
+  }, .1); 
+
+};
+
+//Start Timline Animation Button
 
 function startAnimation() {
+
   if (!layerView) return;
 
   clearInterval(animationInterval);
@@ -445,7 +551,7 @@ function startAnimation() {
 
     updateProgress();
     updateDateText();
-  }, 50); 
+  }, 20); 
 };
 
 //Pause Animation Button
@@ -473,3 +579,18 @@ document.getElementById("pauseBtn").addEventListener("click", pauseAnimation);
 document.getElementById("resetBtn").addEventListener("click", resetAnimation);
 
 /***End Timeline Animation*/
+
+/****Close Splashscreen after DC Buildings Layer Load****/
+
+const loadingText = document.querySelector(".splash-loading-text");
+const loadedText = document.querySelector(".splash-loaded-text");
+
+view.whenLayerView(dcBuildings).then((layerView) => {
+  reactiveUtils.whenOnce(() => !layerView.updating).then(() => {
+    splashButton.style.background = 'var(--Dark-Brown)'
+    splashButton.style.cursor = 'pointer'
+    splashButton.disabled = false;
+    loadingText.style.display = 'none';
+    loadedText.style.display = 'flex';
+  });
+});
