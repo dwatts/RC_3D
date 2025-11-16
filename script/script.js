@@ -185,7 +185,7 @@ $('#timelineSwitch').change(function(){
 /***Add Map Layers***/
 
 const rcStructures = new SceneLayer({
-  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/RC_Models_Time_ID_Feature_Layer/SceneServer",
+  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Structures/SceneServer",
   renderer: rcStructuresRenderer,
   // labelingInfo: [structureUseLabel],
   labelingInfo: [""],
@@ -211,7 +211,7 @@ const newDealBuildingsLabelPoint = new FeatureLayer({
 })
 
 const rcTrees = new SceneLayer({                    
-  url:"https://tiles.arcgis.com/tiles/njxlOVQKvDzk10uN/arcgis/rest/services/RC_Trees_Expanded/SceneServer",
+  url:"https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Area_Trees/SceneServer",
   opacity: 0.7,
   popupEnabled: false
 });
