@@ -379,7 +379,7 @@ input:checked + .slider:before {
     padding-left:.5rem;
     letter-spacing: .1rem;
     text-transform: uppercase;
-    padding-bottom: .245rem;
+    margin-bottom: 1.08rem;
 }
 
 /*Adjust splash paragraph text font weight*/
