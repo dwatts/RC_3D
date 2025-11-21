@@ -39,14 +39,13 @@ $(document).ready(function(){
     .fadeIn();
 });
 
-
 //Splash button initially disabled until DC Buildings layer loads
 
 const splashButton = document.querySelector(".splash-btn");
 
 splashButton.disabled = true;
 
-/***Close Splash Screen***/
+// /***Close Splash Screen***/
 
 $('.splash-btn').click(function () {
     $('.splash-container').fadeOut(700);
@@ -67,6 +66,71 @@ $('.splash-btn').click(function () {
     });
     startIntroAnimation();
 })
+
+/***Open Tour Pane***/
+
+let toggle = 1;
+
+$('#tour-btn').click(function () {
+  if (toggle == 1) {
+    
+    toggle = 0;
+    $('.tour-panel').fadeIn(700);
+    $('.tour-btn').addClass('on');
+
+    view.goTo({
+        position: {
+          spatialReference: {
+            // latestWkid: 3857,
+            wkid: 3857
+          },
+          x: -8577004.779774044,
+          y: 4705667.843296814,
+          z: 10.543300992809236
+        },
+        heading: 83.59418325714013,
+        tilt: 84.22649756027022
+    }, {
+      duration: 3000
+    });
+
+    graphicsLayer.graphics.forEach(g => {
+        if (g !== imageOneGraphic) {
+          g.visible = false;
+        } else {
+          imageOneGraphic.visible = true;
+        }
+    });
+
+  } else if (toggle == 0) {
+    toggle = 1;
+
+    $('.tour-panel').fadeOut(700);
+    $('.tour-btn').removeClass('on');
+
+    view.goTo({
+        position: {
+          spatialReference: {
+            // latestWkid: 3857,
+            wkid: 3857
+          },
+          x: -8576700.517221361,
+          y: 4704926.522271065,
+          z: 748.4846795396879
+        },
+        heading: 359.4376327221278,
+        tilt: 38.177992495378874
+    }, {
+      duration: 3000
+    });
+
+    graphicsLayer.graphics.forEach(g => {
+        g.visible = false;
+    });
+
+  } else {}
+})
+
 
 /***Trigger About Modal***/
 
@@ -144,33 +208,6 @@ $('#weatherSwitch').change(function(){
   }
 })
 
-/***See a picture***/
-
-const opts = {
-  duration: 4500
-};
-
-$('#pictureSwitch').change(function(){
-  if ($(this).is(':checked')) {
-    planeGraphic.visible = true;
-    view.goTo({
-        position: {
-          spatialReference: {
-            // latestWkid: 3857,
-            wkid: 3857
-          },
-          x: -8576679.20928113,
-          y: 4705724.339036823,
-          z: 10.870980000123382
-        },
-        heading: 171.26830269409342,
-        tilt: 83.8963921996654 
-    }, opts);
-  } else {
-    planeGraphic.visible = false;
-  }
-})
-
 /***Toggle Timeline Div */
 
 $('#timelineSwitch').change(function(){
@@ -211,7 +248,7 @@ const newDealBuildingsLabelPoint = new FeatureLayer({
 })
 
 const rcTrees = new SceneLayer({                    
-  url:"https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Area_Trees/SceneServer",
+  url:"https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/RC_Trees_3D/SceneServer",
   opacity: 0.7,
   popupEnabled: false
 });
@@ -241,38 +278,340 @@ const graphicsLayer = new GraphicsLayer({
   }
 });
 
-const point = new Point({
-  x: -8576674.306947947,
-  y: 4705681.796168767,
+/*Image One*/
+
+const imageOnePoint = new Point({
+  x: -8576975.467217475,
+  y: 4705667.056388107,
+  z: 8,
+  spatialReference: SpatialReference.WebMercator
+});
+
+const imageOnePlane = Mesh.createPlane(imageOnePoint, {size: { height: 6, width: 12}, facing: "west", vertexSpace: "georeferenced"});
+
+imageOnePlane.rotate(0,0,0);
+
+imageOnePlane.components[0].material = new MeshMaterial({
+  colorTexture: {url: "./assets/images/TourImages/Stop_1.JPG"}
+});
+
+// const imageOneGraphic = new Graphic({
+//   geometry: imageOnePlane,
+//   visible: true,
+//   symbol: new MeshSymbol3D({
+//     symbolLayers: [new FillSymbol3DLayer({
+//       material: {
+//         color: null
+//       }
+//     })]
+//   })
+// });
+
+const imageOneGraphic = new Graphic({
+  geometry: imageOnePlane,
+  visible: false,
+  symbol: new MeshSymbol3D({
+    symbolLayers: [
+      new FillSymbol3DLayer({
+        material: { color: null },
+        edges: {
+          type: "solid",
+          color: "#ffffff",
+          size: 3
+        }
+      })
+    ]
+  })
+});
+
+imageOnePlane.attributes = {
+  "caption": "This is a test caption for image one"
+};
+
+/*End Image One*/
+
+/*Image Two*/
+
+const imageTwoPoint = new Point({
+  x: -8576962.715648185,
+  y: 4705684.373811365,
+  z: 8.5,
+  spatialReference: SpatialReference.WebMercator
+});
+
+const imageTwoPlane = Mesh.createPlane(imageTwoPoint, {size: { height: 6, width: 12}, facing: "west", vertexSpace: "georeferenced"});
+
+imageTwoPlane.rotate(0,0,20);
+
+imageTwoPlane.components[0].material = new MeshMaterial({
+  colorTexture: {url: "./assets/images/TourImages/Stop_2.JPG"}
+});
+
+const imageTwoGraphic = new Graphic({
+  geometry: imageTwoPlane,
+  visible: false,
+  symbol: new MeshSymbol3D({
+    symbolLayers: [
+      new FillSymbol3DLayer({
+        material: { color: null },
+        edges: {
+          type: "solid",
+          color: "#ffffff",
+          size: 3
+        }
+      })
+    ]
+  })
+});
+
+imageTwoPlane.attributes = {
+  "caption": "This is a test caption for image two"
+};
+
+/*End Image Two*/
+
+/*Image Three*/
+
+const imageThreePoint = new Point({
+  x: -8576888.084422419,
+  y: 4705690.157280493,
+  z: 8,
+  spatialReference: SpatialReference.WebMercator
+});
+
+const imageThreePlane = Mesh.createPlane(imageThreePoint, {size: { height: 6, width: 12}, facing: "west", vertexSpace: "georeferenced"});
+
+imageThreePlane.rotate(0,0,15);
+
+imageThreePlane.components[0].material = new MeshMaterial({
+  colorTexture: {url: "./assets/images/TourImages/Stop_3.JPG"}
+});
+
+const imageThreeGraphic = new Graphic({
+  geometry: imageThreePlane,
+  visible: false,
+  symbol: new MeshSymbol3D({
+    symbolLayers: [
+      new FillSymbol3DLayer({
+        material: { color: null },
+        edges: {
+          type: "solid",
+          color: "#ffffff",
+          size: 3
+        }
+      })
+    ]
+  })
+});
+
+imageThreePlane.attributes = {
+  "caption": "This is a test caption for image three"
+};
+
+/*End Image Three*/
+
+/*Image Four*/
+
+const imageFourPoint = new Point({
+  x: -8576824.272072172,
+  y: 4705657.890354409,
   z: 7,
   spatialReference: SpatialReference.WebMercator
 });
 
-const plane = Mesh.createPlane(point, {size: { height: 7, width: 14}, facing: "north", vertexSpace: "georeferenced"});
+const imageFourPlane = Mesh.createPlane(imageFourPoint, {size: { height: 5, width: 10}, facing: "north", vertexSpace: "georeferenced"});
 
-plane.rotate(0,0,0);
+imageFourPlane.rotate(0,0,0);
 
-plane.components[0].material = new MeshMaterial({
-  colorTexture: {url: "./assets/images/Image3.jpg"}
+imageFourPlane.components[0].material = new MeshMaterial({
+  colorTexture: {url: "./assets/images/TourImages/Stop_4_1.JPG"}
 });
 
-const planeGraphic = new Graphic({
-  geometry: plane,
+const imageFourGraphic = new Graphic({
+  geometry: imageFourPlane,
   visible: false,
   symbol: new MeshSymbol3D({
-    symbolLayers: [new FillSymbol3DLayer({
-      material: {
-        color: null
-      }
-    })]
+    symbolLayers: [
+      new FillSymbol3DLayer({
+        material: { color: null },
+        edges: {
+          type: "solid",
+          color: "#ffffff",
+          size: 3
+        }
+      })
+    ]
   })
 });
 
-planeGraphic.attributes = {
-  "caption": "This is a test caption for the planeGraphic"
+imageFourPlane.attributes = {
+  "caption": "This is a test caption for image four"
 };
 
-graphicsLayer.addMany([planeGraphic]);
+/*End Image Four*/
+
+/*Image Five*/
+
+const imageFivePoint = new Point({
+  x: -8576585.395584574,
+  y: 4705689.322322281,
+  z: 6,
+  spatialReference: SpatialReference.WebMercator
+});
+
+const imageFivePlane = Mesh.createPlane(imageFivePoint, {size: { height: 4, width: 8}, facing: "west", vertexSpace: "georeferenced"});
+
+imageFivePlane.rotate(0,0,0);
+
+imageFivePlane.components[0].material = new MeshMaterial({
+  colorTexture: {url: "./assets/images/TourImages/Stop_5.JPG"}
+});
+
+const imageFiveGraphic = new Graphic({
+  geometry: imageFivePlane,
+  visible: false,
+  symbol: new MeshSymbol3D({
+    symbolLayers: [
+      new FillSymbol3DLayer({
+        material: { color: null },
+        edges: {
+          type: "solid",
+          color: "#ffffff",
+          size: 3
+        }
+      })
+    ]
+  })
+});
+
+imageFivePlane.attributes = {
+  "caption": "This is a test caption for image five"
+};
+
+/*End Image Five*/
+
+/*Image Six*/
+
+const imageSixPoint = new Point({
+  x: -8576418.172697078,
+  y: 4705706.755209459,
+  z: 6,
+  spatialReference: SpatialReference.WebMercator
+});
+
+const imageSixPlane = Mesh.createPlane(imageSixPoint, {size: { height: 4, width: 8}, facing: "north", vertexSpace: "georeferenced"});
+
+imageSixPlane.rotate(0,0,0);
+
+imageSixPlane.components[0].material = new MeshMaterial({
+  colorTexture: {url: "./assets/images/TourImages/Stop_6_1.JPG"}
+});
+
+const imageSixGraphic = new Graphic({
+  geometry: imageSixPlane,
+  visible: false,
+  symbol: new MeshSymbol3D({
+    symbolLayers: [
+      new FillSymbol3DLayer({
+        material: { color: null },
+        edges: {
+          type: "solid",
+          color: "#ffffff",
+          size: 3
+        }
+      })
+    ]
+  })
+});
+imageSixPlane.attributes = {
+  "caption": "This is a test caption for image five"
+};
+
+/*End Image Six*/
+
+/*Image Seven*/
+
+const imageSevenPoint = new Point({
+  x: -8576727.67788017,
+  y: 4705666.360655037,
+  z: 7,
+  spatialReference: SpatialReference.WebMercator
+});
+
+const imageSevenPlane = Mesh.createPlane(imageSevenPoint, {size: { height: 6, width: 12}, facing: "north", vertexSpace: "georeferenced"});
+
+imageSevenPlane.rotate(0,0,0);
+
+imageSevenPlane.components[0].material = new MeshMaterial({
+  colorTexture: {url: "./assets/images/TourImages/Stop_7_1.JPG"}
+});
+
+const imageSevenGraphic = new Graphic({
+  geometry: imageSevenPlane,
+  visible: false,
+  symbol: new MeshSymbol3D({
+    symbolLayers: [
+      new FillSymbol3DLayer({
+        material: { color: null },
+        edges: {
+          type: "solid",
+          color: "#ffffff",
+          size: 3
+        }
+      })
+    ]
+  })
+});
+
+imageSevenPlane.attributes = {
+  "caption": "This is a test caption for image five"
+};
+
+/*End Image Seven*/
+
+/*Image Eight*/
+
+const imageEightPoint = new Point({
+  x: -8576709.849813217,
+  y: 4705647.31064385,
+  z: 7,
+  spatialReference: SpatialReference.WebMercator
+});
+
+const imageEightPlane = Mesh.createPlane(imageEightPoint, {size: { height: 6, width: 12}, facing: "west", vertexSpace: "georeferenced"});
+
+imageEightPlane.rotate(0,0,0);
+
+imageEightPlane.components[0].material = new MeshMaterial({
+  colorTexture: {url: "./assets/images/TourImages/Stop_8.JPG"}
+});
+
+const imageEightGraphic = new Graphic({
+  geometry: imageEightPlane,
+  visible: false,
+  symbol: new MeshSymbol3D({
+    symbolLayers: [
+      new FillSymbol3DLayer({
+        material: { color: null },
+        edges: {
+          type: "solid",
+          color: "#ffffff",
+          size: 3
+        }
+      })
+    ]
+  })
+});
+
+imageEightPlane.attributes = {
+  "caption": "This is a test caption for image five"
+};
+
+/*End Image Eight*/
+
+/***Add all image / graphics layers) */
+
+graphicsLayer.addMany([imageOneGraphic, imageTwoGraphic, imageThreeGraphic, imageFourGraphic, imageFiveGraphic, imageSixGraphic, imageSevenGraphic, imageEightGraphic]);
 
 /***Basemap Layers***/
 
@@ -427,9 +766,7 @@ view.on("immediate-click", (event) => {
           highlight = layerView.highlight(result, { name: "custom"});
       });
 
-      
-
-    } else if (hitResult.results.find(r => r.graphic === planeGraphic)) {
+    } /* else if (hitResult.results.find(r => r.graphic === planeGraphic)) {
 
       console.log(planeGraphic.attributes.caption);
       
@@ -439,7 +776,7 @@ view.on("immediate-click", (event) => {
       popupImgUrl.src = "./assets/images/Image3.jpg";
       popupText.innerHTML = String(planeGraphic.attributes.caption);
     
-    } else {
+    }*/ else {
         $('#cardId').fadeOut();
         highlight?.remove();
 
@@ -451,17 +788,17 @@ view.on("immediate-click", (event) => {
 
 /***View Coordinates***/
 
-// view.watch('camera.position', function(newValue, oldValue, property, object) {
-//   console.log(property , newValue);
-// });
+view.watch('camera.position', function(newValue, oldValue, property, object) {
+  console.log(property , newValue);
+});
 
-// view.watch('camera.heading', function(newValue, oldValue, property, object) {
-//   console.log(property , newValue);
-// });
+view.watch('camera.heading', function(newValue, oldValue, property, object) {
+  console.log(property , newValue);
+});
 
-// view.watch('camera.tilt', function(newValue, oldValue, property, object) {
-//   console.log(property , newValue);
-// });
+view.watch('camera.tilt', function(newValue, oldValue, property, object) {
+  console.log(property , newValue);
+});
 
 /***Timeline Animation***/
 
@@ -603,4 +940,242 @@ view.whenLayerView(dcBuildings).then((layerView) => {
     loadingText.style.display = 'none';
     loadedText.style.display = 'flex';
   });
+});
+
+
+// Tour Pagination
+
+let items = $(".list-wrapper .list-item");
+let numItems = items.length;
+let perPage = 1;
+
+items.slice(perPage).hide();
+
+$('#pagination-container').pagination({
+    items: numItems,
+    itemsOnPage: perPage,
+    prevText: '<i class="fa-solid fa-arrow-left"></i>',
+nextText: '<i class="fa-solid fa-arrow-right"></i>',
+    onPageClick: function (pageNumber) {
+        $('.list-wrapper').scrollTop(0);
+
+        let showFrom = perPage * (pageNumber - 1);
+        let showTo = showFrom + perPage;
+        // items.hide().slice(showFrom, showTo).show();
+        items.hide().slice(showFrom, showTo).fadeIn(800)
+
+        function tourZoom() {
+          if (pageNumber == 1) {
+
+            view.goTo({
+                position: {
+                  spatialReference: {
+                    // latestWkid: 3857,
+                    wkid: 3857
+                  },
+                  x: -8577004.779774044,
+                  y: 4705667.843296814,
+                  z: 10.543300992809236
+                },
+                heading: 83.59418325714013,
+                tilt: 84.22649756027022
+            }, {
+              duration: 3000
+            });
+
+            graphicsLayer.graphics.forEach(g => {
+              if (g !== imageOneGraphic) {
+                g.visible = false;
+              } else {
+                imageOneGraphic.visible = true;
+              }
+            });
+            
+          } else if (pageNumber == 2) {
+
+            view.goTo({
+                position: {
+                  spatialReference: {
+                    // latestWkid: 3857,
+                    wkid: 3857
+                  },
+                  x: -8576989.152729018,
+                  y: 4705679.9810580285,
+                  z: 10.485039697960019
+                },
+                heading: 70.35532553222679,
+                tilt: 86.11341892628539
+            }, {
+              duration: 3000
+            });
+
+            graphicsLayer.graphics.forEach(g => {
+              if (g !== imageTwoGraphic) {
+                g.visible = false;
+              } else {
+                imageTwoGraphic.visible = true;
+              }
+            });
+
+          } else if (pageNumber == 3) {
+
+            view.goTo({
+                position: {
+                  spatialReference: {
+                    // latestWkid: 3857,
+                    wkid: 3857
+                  },
+                  x: -8576919.096524056,
+                  y: 4705683.647870868,
+                  z: 10.81275842525065
+                },
+                heading: 70.62430450730903,
+                tilt: 83.49760791353782
+            }, {
+              duration: 3500
+            });
+
+            graphicsLayer.graphics.forEach(g => {
+              if (g !== imageThreeGraphic) {
+                g.visible = false;
+              } else {
+                imageThreeGraphic.visible = true;
+              }
+            });
+
+          } else if (pageNumber == 4) {
+
+            view.goTo({
+                position: {
+                  spatialReference: {
+                    // latestWkid: 3857,
+                    wkid: 3857
+                  },
+                  x: -8576823.540303953,
+                  y: 4705686.89671136,
+                  z: 10.011710852384567
+                },
+                heading: 174.7211623546343,
+                tilt: 84.40962104687159
+            }, {
+              duration: 4000
+            });
+
+            graphicsLayer.graphics.forEach(g => {
+              if (g !== imageFourGraphic) {
+                g.visible = false;
+              } else {
+                imageFourGraphic.visible = true;
+              }
+            });
+
+          } else if (pageNumber == 5) {
+
+            view.goTo({
+                position: {
+                  spatialReference: {
+                    // latestWkid: 3857,
+                    wkid: 3857
+                  },
+                  x: -8576613.497337826,
+                  y: 4705684.875138781,
+                  z: 8.82313084602356
+                },
+                heading: 77.67761909751498,
+                tilt: 82.84882863924025
+            }, {
+              duration: 4000
+            });
+
+            graphicsLayer.graphics.forEach(g => {
+              if (g !== imageFiveGraphic) {
+                g.visible = false;
+              } else {
+                imageFiveGraphic.visible = true;
+              }
+            });
+
+          } else if (pageNumber == 6) {
+
+            view.goTo({
+                position: {
+                  spatialReference: {
+                    // latestWkid: 3857,
+                    wkid: 3857
+                  },
+                  x: -8576416.48588196,
+                  y: 4705727.700724684,
+                  z: 8.832583929412067
+                },
+                heading: 174.9596704992528,
+                tilt: 82.06501693126847
+            }, {
+              duration: 3500
+            });
+
+            graphicsLayer.graphics.forEach(g => {
+              if (g !== imageSixGraphic) {
+                g.visible = false;
+              } else {
+                imageSixGraphic.visible = true;
+              }
+            });
+
+          } else if (pageNumber == 7) {
+
+            view.goTo({
+                position: {
+                  spatialReference: {
+                    // latestWkid: 3857,
+                    wkid: 3857
+                  },
+                  x: -8576725.321068317,
+                  y: 4705693.5749877365,
+                  z: 13.036840473301709
+                },
+                heading: 175.39613210790532,
+                tilt: 74.14001875546752
+            }, {
+              duration: 3500
+            });
+
+            graphicsLayer.graphics.forEach(g => {
+              if (g !== imageSevenGraphic) {
+                g.visible = false;
+              } else {
+                imageSevenGraphic.visible = true;
+              }
+            });
+
+          } else if (pageNumber == 8) {
+
+            view.goTo({
+                position: {
+                  spatialReference: {
+                    // latestWkid: 3857,
+                    wkid: 3857
+                  },
+                  x: -8576740.581724314,
+                  y: 4705662.478255918,
+                  z: 13.309347042813897
+                },
+                heading: 105.06355952716257,
+                tilt: 75.64944936130252
+            }, {
+              duration: 4500
+            });
+
+            graphicsLayer.graphics.forEach(g => {
+              if (g !== imageEightGraphic) {
+                g.visible = false;
+              } else {
+                imageEightGraphic.visible = true;
+              }
+            });
+
+          }  else {};
+        }
+
+        tourZoom();
+    }
 });
