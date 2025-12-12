@@ -332,6 +332,7 @@ input:checked + .slider:before {
     background: linear-gradient(var(--Background), var(--Background-Alt));
     padding: 1.5rem;
     border-radius: .5rem;
+    display: none;
 }
 
 .splash-title {
@@ -896,8 +897,8 @@ input:checked + .slider:before {
 
 .popup {
     display: none;
-    /* flex-direction: column;
-    align-items: center; */
+    flex-direction: column;
+    /*align-items: center; */
     width: 500px;
     max-height: 80%;
     background: linear-gradient(var(--Background-Blue), var(--Background-Blue-Alt));
@@ -935,7 +936,27 @@ input:checked + .slider:before {
     line-height: 1.35rem;
     letter-spacing: .02rem;
     padding-top: .3rem;
-} */
+}
+
+.popup-close {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    margin-bottom: .5rem;
+}
+
+.popup-close i {
+    font-size: 1.2rem;
+    color: var(--Dark-Brown);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.popup-close i:hover {
+    color: var(--Background);
+    transform: translateY(-0.09rem);
+}
 
 /*.popup .panel-line {
     margin: 0;

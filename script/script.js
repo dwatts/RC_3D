@@ -32,11 +32,16 @@ $('.app-image').click(function (e) {
 
 /***Fade in Splash Screen on Load***/
 
+function showDivInner() {
+  $(".splash-inner").fadeIn(500);
+}
+
 $(document).ready(function(){
     $(".splash-container")
     .css("display", "flex")
     .hide()
     .fadeIn();
+    setTimeout(showDivInner, 1000);
 });
 
 //Splash button initially disabled until DC Buildings layer loads
@@ -167,6 +172,13 @@ $('#help-btn').click(function(){
 $('#help-close').click(function(){
   $('.help-panel').toggleClass('on');
   $('#help-btn').toggleClass('on');
+});
+
+/***Close popups***/
+
+$('#popup-close' ).click(function(){
+    $('#cardId').fadeOut();
+    highlight?.remove();
 });
 
 /***Turn on RC structures labels***/
