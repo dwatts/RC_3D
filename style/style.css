@@ -249,7 +249,6 @@ input:checked + .slider:before {
 
 .zoom-in-btn,
 .zoom-out-btn {
-    /* position: absolute; */
     bottom: 4rem;
     right: 4rem;
     z-index: 2
@@ -258,12 +257,9 @@ input:checked + .slider:before {
 .zoom-in-btn,
 .zoom-out-btn {
     cursor: pointer;
-    /* position: absolute; */
     display: flex;
     align-items: center;
     justify-content: center;
-    /* bottom: 2rem;
-    left:2rem; */
     height:2.5rem;
     width:2.5rem;
     border-radius: 50%;
@@ -353,7 +349,6 @@ input:checked + .slider:before {
     font-size: 1.95rem;
     text-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
     color: var(--Dark-Brown);
-    /* font-family: var(--Anton); */
     font-family: 'MartinDisplayBold', Fallback, sans-serif;
     letter-spacing: .05rem;
 }
@@ -590,11 +585,8 @@ input:checked + .slider:before {
 .side-panel {
     position: fixed;
     top: 5rem;
-    /* left: -26rem; */
     left: -41rem;
-    height: auto;
-    max-height: 80%;
-    /* width: 25rem; */
+    height: 80%;
     width: 40rem;
     background: linear-gradient(var(--Background-Blue), var(--Background-Blue-Alt));
     z-index: 2;
@@ -643,7 +635,7 @@ input:checked + .slider:before {
 .side-panel-text,
 .help-panel-text {
     width: 100%;
-    max-height: 91%;
+    max-height: 87%;
     overflow-y: auto;
     padding-right: 1rem;
 }
@@ -684,6 +676,17 @@ input:checked + .slider:before {
     letter-spacing: .02rem;
     cursor: default;
 }
+
+.side-panel-text img {
+    width: 100%;
+    border-radius: .25rem;
+    margin: 1.2rem 0;
+    transition: opacity .3s;
+    cursor: pointer;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.15);
+}
+
+/* Control Switch Div -- Move when permanent home is found */
 
 .controls {
     width: 100%;

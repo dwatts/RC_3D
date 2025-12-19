@@ -41,7 +41,7 @@ $(document).ready(function(){
     .css("display", "flex")
     .hide()
     .fadeIn();
-    setTimeout(showDivInner, 1000);
+    setTimeout(showDivInner, 2000);
 });
 
 //Splash button initially disabled until DC Buildings layer loads
@@ -195,11 +195,13 @@ $('#labelSwitch').change(function(){
 
 /***Toggle Tree Layer***/
 
-$('#treeSwitch').change(function(){
+$('#highlightSwitch').change(function(){
   if ($(this).is(':checked')) {
-    rcTrees.visible = false;
+    highlightHandle.remove();
   } else {
-    rcTrees.visible = true;
+    view.whenLayerView(rcStructures).then((layerViewHighlight) => {
+      highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
+    });
   }
 })
 
@@ -306,18 +308,6 @@ imageOnePlane.rotate(0,0,0);
 imageOnePlane.components[0].material = new MeshMaterial({
   colorTexture: {url: "./assets/images/TourImages/Stop_1.JPG"}
 });
-
-// const imageOneGraphic = new Graphic({
-//   geometry: imageOnePlane,
-//   visible: true,
-//   symbol: new MeshSymbol3D({
-//     symbolLayers: [new FillSymbol3DLayer({
-//       material: {
-//         color: null
-//       }
-//     })]
-//   })
-// });
 
 const imageOneGraphic = new Graphic({
   geometry: imageOnePlane,
@@ -658,6 +648,7 @@ const view = new SceneView({
     map: map,
     qualityProfile: "high",
     highlights: [
+      {name: "notable", color: "#51ff00ff", haloColor: "#c8ff00ff", haloOpacity: 1, fillOpacity: 0, shadowOpacity: 0.2},
       {name: "custom", color: "#649b92", haloColor: "#649b92", haloOpacity: 0.9, fillOpacity: 0.5, shadowOpacity: 0.2}
     ],
     environment: {
@@ -733,6 +724,7 @@ document.getElementById("zoom-out-btn").addEventListener("click", () => {
   changeZoom(-1);
 });
 
+
 /***Start HitTest Cursor Pointer Functionality***/
 
 view.on("pointer-move", (event) => {
@@ -773,6 +765,10 @@ view.on("immediate-click", (event) => {
 
       let result = hitResult.results[0].graphic;
 
+      let resultObjectID = result.attributes.OBJECTID;
+
+      console.log(resultObjectID);
+
       view.whenLayerView(result.layer).then((layerView) => {
           highlight?.remove();
           highlight = layerView.highlight(result, { name: "custom"});
@@ -798,19 +794,29 @@ view.on("immediate-click", (event) => {
   })
 })
 
+/***Add Highlight for Selected RC Structures***/
+
+const specificIds = [63, 105, 101, 680, 712, 711, 10, 61, 60, 106, 228, 99, 56, 57, 100, 143, 104, 58, 59, 689, 688, 687, 677, 652, 653, 102];
+let highlightHandle;
+
+view.whenLayerView(rcStructures).then((layerViewHighlight) => {
+  highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
+});
+
+
 /***View Coordinates***/
 
-view.watch('camera.position', function(newValue, oldValue, property, object) {
-  console.log(property , newValue);
-});
+// view.watch('camera.position', function(newValue, oldValue, property, object) {
+//   console.log(property , newValue);
+// });
 
-view.watch('camera.heading', function(newValue, oldValue, property, object) {
-  console.log(property , newValue);
-});
+// view.watch('camera.heading', function(newValue, oldValue, property, object) {
+//   console.log(property , newValue);
+// });
 
-view.watch('camera.tilt', function(newValue, oldValue, property, object) {
-  console.log(property , newValue);
-});
+// view.watch('camera.tilt', function(newValue, oldValue, property, object) {
+//   console.log(property , newValue);
+// });
 
 /***Timeline Animation***/
 
