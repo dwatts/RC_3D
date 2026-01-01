@@ -6,7 +6,7 @@ const structureUseLabel = {  // autocasts as new LabelClass()
             type: "text", // autocasts as new TextSymbol3DLayer()
             material: { color: "#402e32"},
             background: {
-                color: [236, 232, 221, 0.5]
+                color: [236, 232, 221, 0.3]
             },
             // halo: {
             //     color: [255,255,255,1],
@@ -25,7 +25,7 @@ const structureUseLabel = {  // autocasts as new LabelClass()
             },
             callout: {
                 type: "line", 
-                size: 1,
+                size: 0,
                 color: [0, 0, 0],
                 border: {
                     color: [255, 255, 255, 0]
@@ -35,10 +35,15 @@ const structureUseLabel = {  // autocasts as new LabelClass()
         minScale: 2500, 
         maxScale: 0,
         // labelPlacement: "above-center",
+        // labelExpressionInfo: {
+        //     expression: 'if (!IsEmpty($feature.name) && $feature.name != "Toilet" && $feature.name != "Other") return $feature.name'
+        // }
         labelExpressionInfo: {
-        expression: 'if (!IsEmpty($feature.name) && $feature.name != "Toilet") return $feature.name'
-    }
+            value: "{Name_Disp}"
+            
+        }
 };
+
 
 const newDealLabel = {  // autocasts as new LabelClass()
     symbol: {

@@ -78,7 +78,11 @@ let toggle = 1;
 
 $('#tour-btn').click(function () {
   if (toggle == 1) {
+
+    //Remove notable structure highlights
     
+    highlightHandle.remove();
+
     toggle = 0;
     $('.tour-panel').fadeIn(700);
     $('.tour-btn').addClass('on');
@@ -112,6 +116,12 @@ $('#tour-btn').click(function () {
 
     $('.tour-panel').fadeOut(700);
     $('.tour-btn').removeClass('on');
+
+    //Add notable structure highlights
+  
+    view.whenLayerView(rcStructures).then((layerViewHighlight) => {
+      highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
+    });
 
     view.goTo({
         position: {
@@ -185,10 +195,12 @@ $('#popup-close' ).click(function(){
 
 $('#labelSwitch').change(function(){
   if ($(this).is(':checked')) {
-    rcStructures.labelingInfo = [structureUseLabel]
+    rcStructureIcons.visible = true
+    rcStructureIcons.labelingInfo = [structureUseLabel]
     newDealBuildingsLabelPoint.labelingInfo = [newDealLabel]
   } else {
-    rcStructures.labelingInfo = [""]
+    rcStructureIcons.visible = false
+    rcStructureIcons.labelingInfo = [""]
     newDealBuildingsLabelPoint.labelingInfo = [""]
   }
 })
@@ -236,10 +248,11 @@ $('#timelineSwitch').change(function(){
 /***Add Map Layers***/
 
 const rcStructures = new SceneLayer({
-  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Structures/SceneServer",
+  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Structures/SceneServer",
+  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Structures_Updated/SceneServer",
   renderer: rcStructuresRenderer,
   // labelingInfo: [structureUseLabel],
-  labelingInfo: [""],
+  // labelingInfo: [""],
   outFields: ["*"],
   id: 'rcStructures',
   elevationInfo: {
@@ -248,6 +261,14 @@ const rcStructures = new SceneLayer({
   popupEnabled: false,
   opacity: 1
 });
+
+const rcStructureIcons = new FeatureLayer({
+  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Structure_Label_Points/FeatureServer",
+  popupEnabled: false,
+  renderer: rcIconRenderer,
+  labelingInfo: [""],
+  visible: false
+})
 
 const newDealBuildings = new SceneLayer({
   url: "https://tiles.arcgis.com/tiles/njxlOVQKvDzk10uN/arcgis/rest/services/NewDeal_Mall_Structures/SceneServer",
@@ -638,7 +659,7 @@ const map = new WebScene({
     basemap: customBasemap,
     // basemap: "topo-3d",
     ground: "world-elevation",
-    layers: [rcStructures, graphicsLayer, mallGroundCover, rcTrees, newDealBuildingsLabelPoint, newDealBuildings, dcBuildings],
+    layers: [rcStructures, rcStructureIcons, graphicsLayer, mallGroundCover, rcTrees, newDealBuildingsLabelPoint, newDealBuildings, dcBuildings],
 });
 
 map.ground.opacity = 1;
@@ -729,10 +750,10 @@ document.getElementById("zoom-out-btn").addEventListener("click", () => {
 
 view.on("pointer-move", (event) => {
   const opts = {
-    include: [rcStructures, graphicsLayer]
+    include: [rcStructures/*, graphicsLayer*/]
   }
   view.hitTest(event, opts).then((response) => {
-    if (response.results.length) {
+    if (response.results.length && response.results[0].graphic.attributes.Tour_Building == 1) {
       document.getElementById("viewDiv").style.cursor = "pointer";
     } else {
       document.getElementById("viewDiv").style.cursor = "default";
@@ -743,13 +764,13 @@ view.on("pointer-move", (event) => {
 /***Start Popup HitTest Functionality***/
 
 let popupImgUrl = document.getElementById('popup-image-id');
-let popupText = document.querySelector('.popup-text')
+let popupTitle = document.querySelector('.popup-icon-title h3')
 
 let highlight;
 
 view.on("immediate-click", (event) => {
   view.hitTest(event).then((hitResult) => {
-    if (hitResult.results.length > 0 && hitResult.results[0].graphic.layer.id == "rcStructures") {
+    if (hitResult.results.length > 0 && hitResult.results[0].graphic.layer.id == "rcStructures" && hitResult.results[0].graphic.attributes.Tour_Building == 1) {
         
       /***Make popup div visible***/
     
@@ -758,16 +779,83 @@ view.on("immediate-click", (event) => {
 
       /***Add Popup Content***/
 
-      popupImgUrl.src="./assets/images/placeholder2.jpg";
-      popupText.innerHTML = "";
+      let structureName = hitResult.results[0].graphic.attributes.Name;
+      let popupIcon = document.querySelector('.popup-icon-title img')
+      let popupUse = document.querySelector('.popup-text p span');
 
-      /***Highlight points functionality***/
+      popupTitle.innerHTML = `${structureName}`;
+
+
+      if (structureName == 'Meeting Tent') {
+        popupIcon.src = './assets/icons/Gathering.png';
+        popupUse.innerHTML = "General gathering area for resident meetings";
+      } else if (structureName == 'Workshop / Meeting Tent') {
+        popupIcon.src = './assets/icons/Gathering.png';
+        popupUse.innerHTML = "Gathering area for resident meetings and workshops"
+      } else if (structureName == 'Security') {
+        popupIcon.src = './assets/icons/Security.png';
+        popupUse.innerHTML = "Security staff headquarters"
+      } else if (structureName == 'Campaign Leaders Compound') {
+        popupIcon.src = './assets/icons/City_Hall.png';
+        popupUse.innerHTML = "Leadership residential area"
+      } else if (structureName == 'God\'s Eye Bakery') {
+        popupIcon.src = './assets/icons/Bakery.png';
+        popupUse.innerHTML = "Bakery supplying bread to residents"
+      } else if (structureName == 'Day Care') {
+        popupIcon.src = './assets/icons/Child_Care.png';
+        popupUse.innerHTML = "Child care facilities"
+      } else if (structureName == 'Entertainment Tent') {
+        popupIcon.src = './assets/icons/Gathering.png';
+        popupUse.innerHTML = "Entertainment tent for residents"
+      } else if (structureName == 'Department of Sanitation') {
+        popupIcon.src = './assets/icons/Mechanic.png';
+        popupUse.innerHTML = "Facilities for santitation workers"
+      } else if (structureName == 'Medical Unit' || structureName == 'Medical Services') {
+        popupIcon.src = './assets/icons/Medical.png';
+        popupUse.innerHTML = "Medical services for residents"
+      } else if (structureName == 'Showers') {
+        popupIcon.src = './assets/icons/Showers.png';
+        popupUse.innerHTML = "Shower facilities"
+      } else if (structureName == 'Dining Area') {
+        popupIcon.src = './assets/icons/Food_Service.png';
+        popupUse.innerHTML = "Main gathering area for food services"
+      } else if (structureName == 'Food Storage Trailer') {
+        popupIcon.src = './assets/icons/Food_Storage.png';
+        popupUse.innerHTML = "Refrigerated trailers for onsite food storage"
+      } else if (structureName == 'Toilet') {
+        popupIcon.src = './assets/icons/Restroom.png';
+        popupUse.innerHTML = "Restroom facilities for residents"
+      } else if (structureName == 'Construction Warehouse Tent') {
+        popupIcon.src = './assets/icons/City_Hall.png';
+        popupUse.innerHTML = "Central area for construction supply distribution"
+      } else if (structureName == 'City Hall') {
+        popupIcon.src = './assets/icons/City_Hall.png';
+        popupUse.innerHTML = "Center of governance for Resurrection City"
+      } else if (structureName == 'Main Gathering Tent') {
+        popupIcon.src = './assets/icons/Gathering.png';
+        popupUse.innerHTML = "Main gathering area for residents"
+      } else if (structureName == 'Information Services / Donations / Art Booth') {
+        popupIcon.src = './assets/icons/Public_Info.png';
+        popupUse.innerHTML = "Donation facilities"
+      } else if (structureName == 'Volunteer Sign-in Booth') {
+        popupIcon.src = './assets/icons/Public_Info.png';
+        popupUse.innerHTML = "Volunteer marshalling area"
+      } else if (structureName == 'Dental Services') {
+        popupIcon.src = './assets/icons/Medical.png';
+        popupUse.innerHTML = "Dental services for residents"
+      } else if (structureName == 'Seventh Day Adventist') {
+        popupIcon.src = './assets/icons/Public_Info.png';
+        popupUse.innerHTML = "Sevent Day Adventists headquarters"
+      } else if (structureName == 'Public Information Pavilion') {
+        popupIcon.src = './assets/icons/Public_Info.png';
+        popupUse.innerHTML = "Primary area for public information"
+      } else {
+        ""
+      };
+
+      /***Highlight Structures functionality***/
 
       let result = hitResult.results[0].graphic;
-
-      let resultObjectID = result.attributes.OBJECTID;
-
-      console.log(resultObjectID);
 
       view.whenLayerView(result.layer).then((layerView) => {
           highlight?.remove();
@@ -796,13 +884,12 @@ view.on("immediate-click", (event) => {
 
 /***Add Highlight for Selected RC Structures***/
 
-const specificIds = [63, 105, 101, 680, 712, 711, 10, 61, 60, 106, 228, 99, 56, 57, 100, 143, 104, 58, 59, 689, 688, 687, 677, 652, 653, 102];
+const specificIds = [10, 56, 57, 58, 59, 60, 61, 62, 63, 99, 100, 101, 102, 104, 105, 106, 143, 153, 157, 267, 268, 422, 499, 652, 653, 677, 680, 687, 688, 689, 711, 712];
 let highlightHandle;
 
 view.whenLayerView(rcStructures).then((layerViewHighlight) => {
   highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
 });
-
 
 /***View Coordinates***/
 
@@ -973,7 +1060,7 @@ $('#pagination-container').pagination({
     items: numItems,
     itemsOnPage: perPage,
     prevText: '<i class="fa-solid fa-arrow-left"></i>',
-nextText: '<i class="fa-solid fa-arrow-right"></i>',
+    nextText: '<i class="fa-solid fa-arrow-right"></i>',
     onPageClick: function (pageNumber) {
         $('.list-wrapper').scrollTop(0);
 

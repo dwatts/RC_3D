@@ -209,3 +209,126 @@ const rcStructuresRenderer = {
 };
 
 //End RC Structure Category Renderer
+
+//Create RC Structure Icon Renderer
+ 
+const verticalOffset = {
+    screenLength: 5,
+    maxWorldLength: 30,
+    minWorldLength: 15
+};
+
+function getIcon(icon) {
+  return {
+    type: "point-3d", 
+    symbolLayers: [
+      {
+        type: "icon",
+        resource: {
+            href: icon
+        },
+        size: 22,
+        outline: {
+          color: "black",
+          size: 1
+        }
+      }
+    ],
+
+    verticalOffset: verticalOffset,
+
+    callout: {
+      type: "line",
+      color: [0,0,0],
+      size: .5,
+      border: {
+        color: [255,255,255,0]
+      }
+    }
+  };
+}      
+
+const rcIconRenderer = {
+    type: "unique-value",
+    field: "Name_Cat",
+    uniqueValueInfos: [
+        {
+            value: "Administration",
+            symbol: getIcon(
+                "./assets/icons/City_Hall.png"
+            )
+        },
+        {
+            value: "Bakery",
+            symbol: getIcon(
+                "./assets/icons/Bakery.png"
+            )
+        },
+        {
+            value: "Childcare",
+            symbol: getIcon(
+                "./assets/icons/Child_Care.png"
+            )
+        },
+        {
+            value: "Dining",
+            symbol: getIcon(
+                "./assets/icons/Food_Service.png"
+            )
+        },
+        {
+            value: "FoodStorage",
+            symbol: getIcon(
+                "./assets/icons/Food_Storage.png"
+            )
+        },
+        {
+            value: "Gathering",
+            symbol: getIcon(
+                "./assets/icons/Gathering.png"
+            )
+        },
+        {
+            value: "Information",
+            symbol: getIcon(
+                "./assets/icons/Public_Info.png"
+            )
+        },
+        {
+            value: "Medical",
+            symbol: getIcon(
+                "./assets/icons/Medical.png"
+            )
+        },
+        {
+            value: "Residential",
+            symbol: getIcon(
+                "./assets/icons/Residential.png"
+            )
+        },
+        {
+            value: "Security",
+            symbol: getIcon(
+                "./assets/icons/Security.png"
+            )
+        },
+        {
+            value: "Sanitation",
+            symbol: getIcon(
+                "./assets/icons/Mechanic.png"
+            )
+        },
+        {
+            value: "Showers",
+            symbol: getIcon(
+                "./assets/icons/Showers.png"
+            )
+        },
+        {
+            value: "Toilet",
+            symbol: getIcon(
+                "./assets/icons/Restroom.png"
+            )
+        }
+    ]
+};
