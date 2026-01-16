@@ -116,6 +116,7 @@ $('#tour-btn').click(function () {
 
     $('.tour-panel').fadeOut(700);
     $('.tour-btn').removeClass('on');
+    $('#pagination-container').pagination('selectPage', 1);
 
     //Add notable structure highlights
   
@@ -191,6 +192,42 @@ $('#popup-close' ).click(function(){
     highlight?.remove();
 });
 
+/***Close Tour Panel***/
+
+$('#tour-close' ).click(function(){
+    toggle = 1;
+
+    $('.tour-panel').fadeOut(700);
+    $('.tour-btn').removeClass('on');
+    $('#pagination-container').pagination('selectPage', 1);
+
+    //Add notable structure highlights
+  
+    view.whenLayerView(rcStructures).then((layerViewHighlight) => {
+      highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
+    });
+
+    view.goTo({
+        position: {
+          spatialReference: {
+            // latestWkid: 3857,
+            wkid: 3857
+          },
+          x: -8576700.517221361,
+          y: 4704926.522271065,
+          z: 748.4846795396879
+        },
+        heading: 359.4376327221278,
+        tilt: 38.177992495378874
+    }, {
+      duration: 3000
+    });
+
+    graphicsLayer.graphics.forEach(g => {
+        g.visible = false;
+    });
+});
+
 /***Turn on RC structures labels***/
 
 $('#labelSwitch').change(function(){
@@ -248,7 +285,6 @@ $('#timelineSwitch').change(function(){
 /***Add Map Layers***/
 
 const rcStructures = new SceneLayer({
-  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Structures_Updated/SceneServer",
   url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/Resurrection_City_Structure_Models/SceneServer",
   renderer: rcStructuresRenderer,
   outFields: ["*"],
@@ -261,7 +297,6 @@ const rcStructures = new SceneLayer({
 });
 
 const rcStructureIcons = new FeatureLayer({
-  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Structure_Label_Points/FeatureServer",
   url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/Structure_Label_Points/FeatureServer",
   popupEnabled: false,
   renderer: rcIconRenderer,
@@ -270,28 +305,24 @@ const rcStructureIcons = new FeatureLayer({
 })
 
 const newDealBuildings = new SceneLayer({
-  // url: "https://tiles.arcgis.com/tiles/njxlOVQKvDzk10uN/arcgis/rest/services/NewDeal_Mall_Structures/SceneServer",
   url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/New_Deal_Mall_Buildings/SceneServer",
   renderer: dcBuildingsRenderer,
   popupEnabled: false
 });
 
 const newDealBuildingsLabelPoint = new FeatureLayer({
-  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/New_Deal_Building_Label/FeatureServer",
   url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/New_Deal_Structure_Label_Point/FeatureServer",
   labelingInfo: [""],
   renderer: newDealPointRenderer
 })
 
 const rcTrees = new SceneLayer({                    
-  // url:"https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/RC_Trees_3D/SceneServer",
   url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/Resurrection_City_Trees/SceneServer",
   opacity: 0.7,
   popupEnabled: false
 });
 
 const mallGroundCover = new FeatureLayer({
-  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Mall_Cover/FeatureServer",
   url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/Mall_Area_Ground_Cover/FeatureServer",
   elevationInfo: {
     mode: "on-the-ground",
@@ -719,7 +750,7 @@ view.environment.weather = {
 
 /***Add Compass Widget***/
 
-const zoomButtonsDiv = document.getElementById("zoomButtons");
+const zoomButtonsDiv = document.getElementById("zoomButton");
 
 const compassWidget = new Compass({
   view: view, 
@@ -958,9 +989,7 @@ function updateDateText () {
     dateText.innerHTML = 'May 29, 1968'
   } else if (currentValue >= 569 && currentValue <= 712) {
     dateText.innerHTML = 'June 1, 1968'
-  } else {
-
-  }
+  } else {}
 }
 
 //Intro Animation Sequence 

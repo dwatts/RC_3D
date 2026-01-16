@@ -247,12 +247,12 @@ input:checked + .slider:before {
 
 /*Zoom In / Out Button*/
 
-.zoom-in-btn,
+/* .zoom-in-btn,
 .zoom-out-btn {
     bottom: 4rem;
     right: 4rem;
     z-index: 2
-}
+} */
 
 .zoom-in-btn,
 .zoom-out-btn {
@@ -283,8 +283,14 @@ input:checked + .slider:before {
 
 /* Style Compass Widget Icon */
 
+#zoomButton {
+    z-index: 2;
+    height: 2.5rem;
+    width: 2.5rem;
+    position: relative;
+}
+
 .esri-widget--button {
-    z-index: 1;
     height: 2.5rem;
     width: 2.5rem;
     background-color: var(--Background-Blue);
@@ -579,7 +585,10 @@ input:checked + .slider:before {
 
 .panel-btn:hover .tooltiptext,
 .help-btn:hover .tooltiptext,
-.tour-btn:hover .tooltiptext {
+.tour-btn:hover .tooltiptext,
+.zoom-in-btn:hover .tooltiptext,
+.zoom-out-btn:hover .tooltiptext,
+#zoomButton:hover .tooltiptext {
     visibility: visible;
 }
 
