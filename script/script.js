@@ -248,11 +248,9 @@ $('#timelineSwitch').change(function(){
 /***Add Map Layers***/
 
 const rcStructures = new SceneLayer({
-  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Structures/SceneServer",
-  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Structures_Updated/SceneServer",
+  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Resurrection_City_Structures_Updated/SceneServer",
+  url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/Resurrection_City_Structure_Models/SceneServer",
   renderer: rcStructuresRenderer,
-  // labelingInfo: [structureUseLabel],
-  // labelingInfo: [""],
   outFields: ["*"],
   id: 'rcStructures',
   elevationInfo: {
@@ -263,7 +261,8 @@ const rcStructures = new SceneLayer({
 });
 
 const rcStructureIcons = new FeatureLayer({
-  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Structure_Label_Points/FeatureServer",
+  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Structure_Label_Points/FeatureServer",
+  url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/Structure_Label_Points/FeatureServer",
   popupEnabled: false,
   renderer: rcIconRenderer,
   labelingInfo: [""],
@@ -271,25 +270,29 @@ const rcStructureIcons = new FeatureLayer({
 })
 
 const newDealBuildings = new SceneLayer({
-  url: "https://tiles.arcgis.com/tiles/njxlOVQKvDzk10uN/arcgis/rest/services/NewDeal_Mall_Structures/SceneServer",
+  // url: "https://tiles.arcgis.com/tiles/njxlOVQKvDzk10uN/arcgis/rest/services/NewDeal_Mall_Structures/SceneServer",
+  url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/New_Deal_Mall_Buildings/SceneServer",
   renderer: dcBuildingsRenderer,
   popupEnabled: false
 });
 
 const newDealBuildingsLabelPoint = new FeatureLayer({
-  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/New_Deal_Building_Label/FeatureServer",
+  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/New_Deal_Building_Label/FeatureServer",
+  url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/New_Deal_Structure_Label_Point/FeatureServer",
   labelingInfo: [""],
   renderer: newDealPointRenderer
 })
 
 const rcTrees = new SceneLayer({                    
-  url:"https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/RC_Trees_3D/SceneServer",
+  // url:"https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/RC_Trees_3D/SceneServer",
+  url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/Resurrection_City_Trees/SceneServer",
   opacity: 0.7,
   popupEnabled: false
 });
 
 const mallGroundCover = new FeatureLayer({
-  url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Mall_Cover/FeatureServer",
+  // url: "https://services2.arcgis.com/njxlOVQKvDzk10uN/arcgis/rest/services/Mall_Cover/FeatureServer",
+  url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/Mall_Area_Ground_Cover/FeatureServer",
   elevationInfo: {
     mode: "on-the-ground",
   },
@@ -669,7 +672,7 @@ const view = new SceneView({
     map: map,
     qualityProfile: "high",
     highlights: [
-      {name: "notable", color: "#51ff00ff", haloColor: "#c8ff00ff", haloOpacity: 1, fillOpacity: 0, shadowOpacity: 0.2},
+      {name: "notable", color: "#ff1303", haloColor: "#ff1303", haloOpacity: 1, fillOpacity: 0, shadowOpacity: 0.2},
       {name: "custom", color: "#649b92", haloColor: "#649b92", haloOpacity: 0.9, fillOpacity: 0.5, shadowOpacity: 0.2}
     ],
     environment: {
@@ -1047,7 +1050,6 @@ view.whenLayerView(dcBuildings).then((layerView) => {
   });
 });
 
-
 // Tour Pagination
 
 let items = $(".list-wrapper .list-item");
@@ -1059,6 +1061,7 @@ items.slice(perPage).hide();
 $('#pagination-container').pagination({
     items: numItems,
     itemsOnPage: perPage,
+    displayedPages: 999,
     prevText: '<i class="fa-solid fa-arrow-left"></i>',
     nextText: '<i class="fa-solid fa-arrow-right"></i>',
     onPageClick: function (pageNumber) {

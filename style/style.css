@@ -765,15 +765,33 @@ input:checked + .slider:before {
 }
 
 .list-wrapper {
-	padding: 15px;
+	padding: .2rem 0;
     margin-bottom: .75rem;
-    height: 90%;
+    height: 84%;
     overflow-y: auto;
 }
 
 .list-item {
 	margin-bottom: 10px;
 	padding: 10px;
+}
+
+.list-item li {
+    font-family: var(--Bodoni);
+    font-size: .9rem;
+    color: var(--Dark-Brown);
+    margin: .1rem 0;
+    font-weight: 400;
+    line-height: 1.35rem;
+    letter-spacing: .02rem;
+    cursor: default;
+    margin-left: 1rem;
+}
+
+.list-item p i {
+    font-weight: 300;
+    font-size: 1rem;
+    font-family: var(--Bodoni);
 }
 
 .list-item img {
