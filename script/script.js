@@ -20,7 +20,7 @@ const MeshSymbol3D = await $arcgis.import("@arcgis/core/symbols/MeshSymbol3D.js"
 const MeshMaterial = await $arcgis.import("@arcgis/core/geometry/support/MeshMaterial.js");
 const MeshLocalVertexSpace = await $arcgis.import("@arcgis/core/geometry/support/MeshLocalVertexSpace.js");
 
-/***Send images to modal and launch***/
+/***Start: Global code to send images on click to modal and launch***/
 
 $('.app-image').click(function (e) {
   let location = $(e.target).attr('src')
@@ -30,7 +30,7 @@ $('.app-image').click(function (e) {
   $('#img-caption').html(caption);
 });
 
-/***Fade in Splash Screen on Load***/
+/***Start: Fade in Splash Screen on Load***/
 
 function showDivInner() {
   $(".splash-inner").fadeIn(500);
@@ -44,155 +44,317 @@ $(document).ready(function(){
     setTimeout(showDivInner, 2000);
 });
 
+
+/***Start: Close splash screen options: guided tour or self explore***/
+
 //Splash button initially disabled until DC Buildings layer loads
 
-const splashButton = document.querySelector(".splash-btn");
+const splashGuidedButton = document.querySelector(".splash-guided-btn");
+const splashExploreButton = document.querySelector(".splash-explore-btn");
 
-splashButton.disabled = true;
 
-// /***Close Splash Screen***/
+/************************************************/
 
-$('.splash-btn').click(function () {
+//Guided Tour Launch Code
+
+/************************************************/
+
+$('.splash-guided-btn').click(function () {
+    $('.splash-container').fadeOut(700);
+    $('#dateDisplay').fadeIn(700);
+    $('.left-panel-btn-container').css("display", "none");
+    $('.right-panel-btn-container').css("display", "none");
+
+    // const guidedTourInfoPanel = document.querySelector(".guided-tour-side-panel");
+
+    function firstTask() {
+      return new Promise((resolve) => {
+        showIntroText(); 
+        goToFirstView();
+        resolve();
+      });
+    }
+
+    function secondTask() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          setTimeout(() => {
+            
+            goToPresetView();
+            startIntroAnimation();
+            showIntroDate();
+
+            setTimeout(() => {
+              rcStructures.definitionExpression = "";
+              resolve();
+            }, 100);
+
+          }, 50);
+
+        }, 10000);
+      });
+    }
+
+    function thirdTask() {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          // guidedTourInfoPanel.style.display = 'block';
+          $('.guided-tour-side-panel').fadeIn(400);
+          resolve();
+        }, 13000)
+      })
+    }
+
+    async function runTourTasksSequentially() {
+      return firstTask()
+        .then(() => secondTask())
+        .then(() => thirdTask())
+        .then(() => {
+          console.log("All tasks completed");
+        });
+    }
+
+    //Call async function
+    runTourTasksSequentially();
+});
+
+//'Next' button on Wiebenson side panel - start guided tour
+$('#guided-tour-btn').click(function () {
+  toggleTour();
+  $('.guided-tour-side-panel').fadeOut(400);
+});
+
+/***Start: Guided Tour Intro Animation Functions***/
+
+//Go to first view function
+
+function goToFirstView() {
+  view.goTo({
+    position: {
+      spatialReference: {
+        wkid: 3857
+      },
+      x: -8577967.540472522,
+      y: 4705685.053473854,
+      z: 209.81217331252992
+    },
+    heading: 88.50749854394327,
+    tilt: 73.64968337378207
+  }, {
+    duration: 13000
+  });      
+}
+
+//Go to second view function
+
+function goToPresetView() {
+  view.goTo(
+    {
+      position: {
+        spatialReference: {
+          wkid: 3857
+        },
+        x: -8576553.117303116,
+        y: 4704561.225728327,
+        z: 396.86767570860684
+      },
+      heading: 358.9942796413037,
+      tilt: 66.66810769718653
+    },
+    {
+      duration: 10000
+    }
+  );
+}
+
+//Guided Tour Text Typing Animation (Show div, begin letter animation)
+
+function showIntroText() {
+    $(".intro-text-holder")
+      .css("display", "flex") // set flex before showing
+      .hide()
+      .fadeIn(400)
+      .delay(9000)
+      
+      .fadeOut(400, function () {
+          $(this).css("display", "none");
+      });
+
+    setTimeout(() => textTypingEffect(typingText, text), 2000)
+}
+
+//Text animation function
+
+const typingText = document.querySelector(".date-sentence-text");
+const text = "Resurrection City was constructed and occupied over the course of 19 days in May and June of 1968.";
+
+function textTypingEffect(element, text, i = 0) {
+  element.textContent += text[i];
+
+  //Add letter until end of string is reached
+  if (i === text.length -1) {
+    return;
+  }
+
+  setTimeout(()=> textTypingEffect(element, text, i + 1), 50)
+}
+
+//Date Counter 
+
+function showIntroDate() {
+  $(".intro-date-holder")
+    .css("display", "flex")
+    .hide()
+    .fadeIn(400)
+    .delay(12000)
+    
+    .fadeOut(600, function () {
+          $(this).css("display", "none");
+    });
+
+  startDate()
+}
+
+//(19 days total)
+let currentDate = new Date(1968, 4, 13); // May is month 4 (0-based)
+const endDate = new Date(1968, 5, 1);   // June 1, 1968
+
+const display = document.getElementById("dateDisplay");
+
+function updateDate() {
+  const formattedDate = currentDate.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+
+  display.textContent = formattedDate;
+
+  if (currentDate >= endDate) {
+    clearInterval(timer);
+    // $('#dateDisplay').fadeOut(700);
+    return;
+  }
+
+  currentDate.setDate(currentDate.getDate() + 1);  
+}
+
+let timer;
+
+function startDate() {
+  timer = setInterval(updateDate, 526); 
+}
+
+/***End: Guided Tour Intro Animation Functions***/
+
+
+
+/************************************************/
+
+//Explore on your own launch code
+
+/************************************************/
+
+$('.splash-explore-btn').click(function () {
     $('.splash-container').fadeOut(700);
     view.goTo({
-        position: {
-          spatialReference: {
-            // latestWkid: 3857,
-            wkid: 3857
-          },
-           x: -8577663.253492767,
-          y: 4705478.411412261,
-          z: 151.3735215915367
+      position: {
+        spatialReference: {
+          // latestWkid: 3857,
+          wkid: 3857
         },
-        heading: 79.01463482473405,
-        tilt: 81.57362053851135
+        x: -8577402.92788584,
+        y: 4705134.3496611165,
+        z: 405.9044241467491
+      },
+      heading: 54.60092337030268,
+      tilt: 61.38437711848068
     }, {
-      duration: 7000
+      duration: 3000
     });
-    startIntroAnimation();
+
+    view.whenLayerView(rcStructures).then((layerViewHighlight) => {
+      highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
+    });
+
+    rcStructures.definitionExpression = "";
+    
+    $('#labelSwitch')
+      .prop('checked', true)
+      .trigger('change');
 })
 
-/***Open Tour Pane***/
+/***End: Close splash screen options: guided tour or self explore***/
+
+
+
+/***Start: Open guided tour panel and start guided tour***/
 
 let toggle = 1;
 
-$('#tour-btn').click(function () {
+function toggleTour() {
   if (toggle == 1) {
 
-    //Remove notable structure highlights
-    
-    highlightHandle.remove();
+    // Remove notable structure highlights
+    if (highlightHandle) {
+      highlightHandle.remove();
+    }
 
     toggle = 0;
     $('.tour-panel').fadeIn(700);
     $('.tour-btn').addClass('on');
 
     view.goTo({
-        position: {
-          spatialReference: {
-            // latestWkid: 3857,
-            wkid: 3857
-          },
-          x: -8577004.779774044,
-          y: 4705667.843296814,
-          z: 10.543300992809236
-        },
-        heading: 83.59418325714013,
-        tilt: 84.22649756027022
-    }, {
-      duration: 3000
-    });
+      position: {
+        spatialReference: { wkid: 3857 },
+        x: -8577004.779774044,
+        y: 4705667.843296814,
+        z: 10.543300992809236
+      },
+      heading: 83.59418325714013,
+      tilt: 84.22649756027022
+    }, { duration: 3000 });
 
     graphicsLayer.graphics.forEach(g => {
-        if (g !== imageOneGraphic) {
-          g.visible = false;
-        } else {
-          imageOneGraphic.visible = true;
-        }
+      g.visible = (g === imageOneGraphic);
     });
 
   } else if (toggle == 0) {
-    toggle = 1;
 
+    toggle = 1;
     $('.tour-panel').fadeOut(700);
     $('.tour-btn').removeClass('on');
     $('#pagination-container').pagination('selectPage', 1);
 
-    //Add notable structure highlights
-  
+    // Add notable structure highlights
     view.whenLayerView(rcStructures).then((layerViewHighlight) => {
-      highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
+      highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable" });
     });
 
     view.goTo({
-        position: {
-          spatialReference: {
-            // latestWkid: 3857,
-            wkid: 3857
-          },
-          x: -8576700.517221361,
-          y: 4704926.522271065,
-          z: 748.4846795396879
-        },
-        heading: 359.4376327221278,
-        tilt: 38.177992495378874
-    }, {
-      duration: 3000
-    });
+      position: {
+        spatialReference: { wkid: 3857 },
+        x: -8576700.517221361,
+        y: 4704926.522271065,
+        z: 748.4846795396879
+      },
+      heading: 359.4376327221278,
+      tilt: 38.177992495378874
+    }, { duration: 3000 });
 
     graphicsLayer.graphics.forEach(g => {
-        g.visible = false;
+      g.visible = false;
     });
+  }
+}
 
-  } else {}
-})
+$('#tour-btn').click(toggleTour);
+
+/***End: Open guided tour panel and start guided tour***/
 
 
-/***Trigger About Modal***/
 
-$('.nav-item:nth-of-type(5)').click(function () {
-  $('#about-modal').fadeIn(500);
-})
-
-/***Close all modals***/
-
-$('#about-close, #img-close').click(function () {
-    $('#img-modal').fadeOut(500);
-    $('#about-modal').fadeOut(500);
-})
-
-/***Open / Close side panel***/
-
-$('#panel-btn').click(function(){
-  $('.side-panel').toggleClass('on');
-  $('#panel-btn').toggleClass('on');
-});
-
-$('#panel-close').click(function(){
-  $('.side-panel').removeClass('on');
-  $('#panel-btn').toggleClass('on');
-});
-
-/***Open / Close about panel***/
-
-$('#help-btn').click(function(){
-  $('.help-panel').toggleClass('on');
-  $('#help-btn').toggleClass('on');
-});
-
-$('#help-close').click(function(){
-  $('.help-panel').toggleClass('on');
-  $('#help-btn').toggleClass('on');
-});
-
-/***Close popups***/
-
-$('#popup-close' ).click(function(){
-    $('#cardId').fadeOut();
-    highlight?.remove();
-});
-
-/***Close Tour Panel***/
+/***Start: Close Tour Panel***/
 
 $('#tour-close' ).click(function(){
     toggle = 1;
@@ -228,7 +390,58 @@ $('#tour-close' ).click(function(){
     });
 });
 
-/***Turn on RC structures labels***/
+/***End: Close Tour Panel***/
+
+
+
+
+/***Start: Assorted controls code***/
+
+//Trigger About Modal
+
+$('.nav-item:nth-of-type(5)').click(function () {
+  $('#about-modal').fadeIn(500);
+})
+
+//Close all modals
+
+$('#about-close, #img-close').click(function () {
+    $('#img-modal').fadeOut(500);
+    $('#about-modal').fadeOut(500);
+})
+
+//Open / Close side panel
+
+$('#panel-btn').click(function(){
+  $('.side-panel').toggleClass('on');
+  $('#panel-btn').toggleClass('on');
+});
+
+$('#panel-close').click(function(){
+  $('.side-panel').removeClass('on');
+  $('#panel-btn').toggleClass('on');
+});
+
+//Open / Close about panel
+
+$('#help-btn').click(function(){
+  $('.help-panel').toggleClass('on');
+  $('#help-btn').toggleClass('on');
+});
+
+$('#help-close').click(function(){
+  $('.help-panel').toggleClass('on');
+  $('#help-btn').toggleClass('on');
+});
+
+//Close popups
+
+$('#popup-close' ).click(function(){
+    $('#cardId').fadeOut();
+    highlight?.remove();
+});
+
+//Turn on RC structures labels
 
 $('#labelSwitch').change(function(){
   if ($(this).is(':checked')) {
@@ -242,7 +455,7 @@ $('#labelSwitch').change(function(){
   }
 })
 
-/***Toggle Tree Layer***/
+//Toggle Tree Layer
 
 $('#highlightSwitch').change(function(){
   if ($(this).is(':checked')) {
@@ -254,7 +467,7 @@ $('#highlightSwitch').change(function(){
   }
 })
 
-/***Change weather***/
+//Change weather
 
 $('#weatherSwitch').change(function(){
   if ($(this).is(':checked')) {
@@ -271,7 +484,7 @@ $('#weatherSwitch').change(function(){
   }
 })
 
-/***Toggle Timeline Div */
+//Toggle Timeline Div
 
 $('#timelineSwitch').change(function(){
   if ($(this).is(':checked')) {
@@ -282,7 +495,12 @@ $('#timelineSwitch').change(function(){
   }
 })
 
-/***Add Map Layers***/
+/***End: Assorted controls code***/
+
+
+
+
+/***Start: Add WebScene Layers***/
 
 const rcStructures = new SceneLayer({
   url: "https://services3.arcgis.com/9nfxWATFamVUTTGb/arcgis/rest/services/Resurrection_City_Structure_Models/SceneServer",
@@ -293,7 +511,7 @@ const rcStructures = new SceneLayer({
     mode: "on-the-ground"
   },
   popupEnabled: false,
-  opacity: 1
+  definitionExpression: "Const_Time_Integer = 1"
 });
 
 const rcStructureIcons = new FeatureLayer({
@@ -339,7 +557,12 @@ const dcBuildings = new SceneLayer({
   popupEnabled: false
 });
 
-/***Mesh / Graphics Layers***/
+/***End: Add WebScene Layers***/
+
+
+
+
+/***Start: Mesh / Historic Images / Graphics Layers for Tour Images***/
 
 const graphicsLayer = new GraphicsLayer({
   elevationInfo: {
@@ -670,7 +893,11 @@ imageEightPlane.attributes = {
 
 graphicsLayer.addMany([imageOneGraphic, imageTwoGraphic, imageThreeGraphic, imageFourGraphic, imageFiveGraphic, imageSixGraphic, imageSevenGraphic, imageEightGraphic]);
 
-/***Basemap Layers***/
+/***End: Mesh / Historic Images / Graphics Layers for Tour Images***/
+
+
+
+/***Start: Add Custom Basemap Layers***/
 
 const vectorTileLayer = new VectorTileLayer({
     portalItem: {
@@ -687,7 +914,12 @@ const hillshadeTileLayer = new TileLayer({
 
 const customBasemap = new Basemap({ baseLayers: [hillshadeTileLayer, vectorTileLayer] });
 
-/***Create Map and SceneView***/
+/***End: Add Custom Basemap Layers***/
+
+
+
+
+/***Start: Create Scene and SceneView***/
 
 const map = new WebScene({
     basemap: customBasemap,
@@ -717,7 +949,7 @@ const view = new SceneView({
     constraints: {
       altitude: {
         min: 0,
-        max: 5000
+        max: 7000
       }
     },
     camera: {
@@ -725,12 +957,12 @@ const view = new SceneView({
           spatialReference: {
             wkid: 3857
           },
-          x: -8578333.504165262,
-          y: 4705456.0978203695,
-          z: 183.14629888907075
+          x: -8582646.003874714,
+          y: 4705325.325278847,
+          z: 5634.258735703304
         },
-        heading: 86.97859465761329,
-        tilt: 83.64442210800793 
+        heading: 88.25759425850616,
+        tilt: 37.01304637192474 
     },
     environment: {
       lighting: {
@@ -748,7 +980,13 @@ view.environment.weather = {
   cloudCover: 0.5  
 };
 
-/***Add Compass Widget***/
+/***End: Create Scene and SceneView***/
+
+
+
+/***Start: Add Compass Widget and Custom Zoom Buttons***/
+
+//Add Compass Widget
 
 const zoomButtonsDiv = document.getElementById("zoomButton");
 
@@ -757,7 +995,7 @@ const compassWidget = new Compass({
   container: zoomButtonsDiv
 });
 
-/***Custom Zoom In/Out Buttons***/
+//Custom Zoom In/Out Buttons
 
 function changeZoom(delta) {
   const camera = view.camera.clone();
@@ -779,8 +1017,12 @@ document.getElementById("zoom-out-btn").addEventListener("click", () => {
   changeZoom(-1);
 });
 
+/***End: Add Compass Widget and Custom Zoom Buttons***/
 
-/***Start HitTest Cursor Pointer Functionality***/
+
+
+
+/***Start: HitTest Cursor Pointer Functionality***/
 
 view.on("pointer-move", (event) => {
   const opts = {
@@ -795,7 +1037,12 @@ view.on("pointer-move", (event) => {
   });
 });
 
-/***Start Popup HitTest Functionality***/
+/***End: HitTest Cursor Pointer Functionality***/
+
+
+
+
+/***Start: Popup HitTest Functionality***/
 
 let popupImgUrl = document.getElementById('popup-image-id');
 let popupTitle = document.querySelector('.popup-icon-title h3')
@@ -806,12 +1053,12 @@ view.on("immediate-click", (event) => {
   view.hitTest(event).then((hitResult) => {
     if (hitResult.results.length > 0 && hitResult.results[0].graphic.layer.id == "rcStructures" && hitResult.results[0].graphic.attributes.Tour_Building == 1) {
         
-      /***Make popup div visible***/
+      //Make popup div visible
     
       $('#cardId').fadeIn();
       $('#cardId').css('display','flex');
 
-      /***Add Popup Content***/
+      //Add Popup Content
 
       let structureName = hitResult.results[0].graphic.attributes.Name;
       let popupIcon = document.querySelector('.popup-icon-title img')
@@ -887,7 +1134,7 @@ view.on("immediate-click", (event) => {
         ""
       };
 
-      /***Highlight Structures functionality***/
+      //Highlight Structures functionality
 
       let result = hitResult.results[0].graphic;
 
@@ -914,42 +1161,54 @@ view.on("immediate-click", (event) => {
         console.log(`Clicked at X: ${x}, Y: ${y}, Z: ${z}`);
     }
   })
-})
+});
 
-/***Add Highlight for Selected RC Structures***/
+/***End: Popup HitTest Functionality***/
+
+
+
+
+/***Start: Add Special Highlight for Selected RC Structures***/
 
 const specificIds = [10, 56, 57, 58, 59, 60, 61, 62, 63, 99, 100, 101, 102, 104, 105, 106, 143, 153, 157, 267, 268, 422, 499, 652, 653, 677, 680, 687, 688, 689, 711, 712];
 let highlightHandle;
 
-view.whenLayerView(rcStructures).then((layerViewHighlight) => {
-  highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
+// view.whenLayerView(rcStructures).then((layerViewHighlight) => {
+//   highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
+// });
+
+/***End: Add Special Highlight for Selected RC Structures***/
+
+
+
+
+/***See Camera Coordinates in Console***/
+
+view.watch('camera.position', function(newValue, oldValue, property, object) {
+  console.log(property , newValue);
 });
 
-/***View Coordinates***/
+view.watch('camera.heading', function(newValue, oldValue, property, object) {
+  console.log(property , newValue);
+});
 
-// view.watch('camera.position', function(newValue, oldValue, property, object) {
-//   console.log(property , newValue);
-// });
+view.watch('camera.tilt', function(newValue, oldValue, property, object) {
+  console.log(property , newValue);
+});
 
-// view.watch('camera.heading', function(newValue, oldValue, property, object) {
-//   console.log(property , newValue);
-// });
-
-// view.watch('camera.tilt', function(newValue, oldValue, property, object) {
-//   console.log(property , newValue);
-// });
-
-/***Timeline Animation***/
+/***Start: Timeline animation for both guided tour intro and timeline widget***/
 
 const sequenceField = "Const_Time_Integer";
 const dateText = document.querySelector('.automated-date');
 
 let layerView;
-let animationInterval;
+let animationFrameId;
 let currentValue = 0;
 let maxValue = 0;
 
-//Create Query for Animation
+let startTime = null;
+let pausedElapsed = 0;
+const duration = 13000; // Animation length (ms)
 
 view.whenLayerView(rcStructures).then(async (lv) => {
   layerView = lv;
@@ -966,7 +1225,71 @@ view.whenLayerView(rcStructures).then(async (lv) => {
   maxValue = result.features[0].attributes.max_seq || 100;
 });
 
-//Update Progress Bar
+// Timeline Animation Logic
+
+function animate(timestamp) {
+  if (!startTime) startTime = timestamp;
+
+  const elapsed = timestamp - startTime + pausedElapsed;
+  const progress = Math.min(elapsed / duration, 1);
+
+  currentValue = Math.floor(progress * maxValue);
+
+  layerView.filter = {
+    where: `${sequenceField} <= ${currentValue}`
+  };
+
+  updateProgress();
+  updateDateText();
+
+  if (progress < 1) {
+    animationFrameId = requestAnimationFrame(animate);
+  }
+}
+
+function startIntroAnimation() {
+  if (!layerView) return;
+
+  cancelAnimationFrame(animationFrameId);
+  startTime = null;
+  pausedElapsed = 0;
+  animationFrameId = requestAnimationFrame(animate);
+}
+
+// Timeline Controls
+
+function startAnimation() {
+  if (!layerView) return;
+
+  cancelAnimationFrame(animationFrameId);
+  animationFrameId = requestAnimationFrame(animate);
+}
+
+function pauseAnimation() {
+  cancelAnimationFrame(animationFrameId);
+
+  if (startTime !== null) {
+    pausedElapsed += performance.now() - startTime;
+    startTime = null;
+  }
+}
+
+function resetAnimation() {
+  cancelAnimationFrame(animationFrameId);
+
+  currentValue = 0;
+  startTime = null;
+  pausedElapsed = 0;
+
+  if (layerView) {
+    layerView.filter = null;
+  }
+
+  updateProgress();
+  dateText.innerHTML = 'May 13, 1968';
+}
+
+// Timeline Progress Bar
 
 function updateProgress() {
   if (!maxValue) return;
@@ -974,112 +1297,56 @@ function updateProgress() {
   progressBar.style.width = percent + "%";
 }
 
-//Update date text
-
-function updateDateText () {
+function updateDateText() {
   if (currentValue >= 1 && currentValue <= 58) {
-    dateText.innerHTML = 'May 13, 1968'
+    dateText.innerHTML = 'May 13, 1968';
   } else if (currentValue >= 59 && currentValue <= 115) {
-    dateText.innerHTML = 'May 14, 1968'
+    dateText.innerHTML = 'May 14, 1968';
   } else if (currentValue >= 116 && currentValue <= 154) {
-    dateText.innerHTML = 'May 17, 1968'
+    dateText.innerHTML = 'May 17, 1968';
   } else if (currentValue >= 155 && currentValue <= 565) {
-    dateText.innerHTML = 'May 24, 1968'
+    dateText.innerHTML = 'May 24, 1968';
   } else if (currentValue >= 566 && currentValue <= 568) {
-    dateText.innerHTML = 'May 29, 1968'
+    dateText.innerHTML = 'May 29, 1968';
   } else if (currentValue >= 569 && currentValue <= 712) {
-    dateText.innerHTML = 'June 1, 1968'
-  } else {}
-}
-
-//Intro Animation Sequence 
-
-function startIntroAnimation() {
-
-  if (!layerView) return;
-
-  clearInterval(animationInterval);
-
-  animationInterval = setInterval(() => {
-    currentValue++;
-    if (currentValue > maxValue) {
-      clearInterval(animationInterval);
-      return;
-    }
-
-    layerView.filter = {
-      where: `${sequenceField} <= ${currentValue}`
-    };
-  }, .1); 
-
-};
-
-//Start Timline Animation Button
-
-function startAnimation() {
-
-  if (!layerView) return;
-
-  clearInterval(animationInterval);
-
-  animationInterval = setInterval(() => {
-    currentValue++;
-    if (currentValue > maxValue) {
-      clearInterval(animationInterval);
-      return;
-    }
-
-    layerView.filter = {
-      where: `${sequenceField} <= ${currentValue}`
-    };
-
-    updateProgress();
-    updateDateText();
-  }, 20); 
-};
-
-//Pause Animation Button
-
-function pauseAnimation() {
-  clearInterval(animationInterval);
-}
-
-//Reset Animation Button
-
-function resetAnimation() {
-  clearInterval(animationInterval);
-  currentValue = 0;
-  if (layerView) {
-    layerView.filter = null;
+    dateText.innerHTML = 'June 1, 1968';
   }
-  updateProgress();
-  dateText.innerHTML = 'May 13, 1968'
 }
 
-//Create Button Event Listeners
+// Timeline Play / Pause / Reset Buttons
 
 document.getElementById("startBtn").addEventListener("click", startAnimation);
 document.getElementById("pauseBtn").addEventListener("click", pauseAnimation);
 document.getElementById("resetBtn").addEventListener("click", resetAnimation);
 
-/***End Timeline Animation*/
+/***End: Timeline animation for both guided tour intro and timeline widget***/
 
-/****Close Splashscreen after DC Buildings Layer Load****/
+
+
+/****Start: Update splashscreen UI after DC Buildings Layer Load Complete****/
 
 const loadingText = document.querySelector(".splash-loading-text");
-const loadedText = document.querySelector(".splash-loaded-text");
+// const loadedText = document.querySelector(".splash-loaded-text");
 
 view.whenLayerView(dcBuildings).then((layerView) => {
   reactiveUtils.whenOnce(() => !layerView.updating).then(() => {
-    splashButton.style.background = 'var(--Dark-Brown)'
-    splashButton.style.cursor = 'pointer'
-    splashButton.disabled = false;
+    // splashGuidedButton.style.background = 'var(--Dark-Brown)'
+    // splashGuidedButton.style.cursor = 'pointer'
+    // splashGuidedButton.disabled = false;
+    // splashExploreButton.style.background = 'var(--Dark-Brown)'
+    // splashExploreButton.style.cursor = 'pointer'
+    // splashExploreButton.disabled = false;
     loadingText.style.display = 'none';
-    loadedText.style.display = 'flex';
+    // loadedText.style.display = 'flex';
+    // console.log('layers loaded')
   });
 });
 
-// Tour Pagination
+/****End: Update splashscreen UI after DC Buildings Layer Load Complete****/
+
+
+
+/****Start: Guided Tour Pagination Logic****/
 
 let items = $(".list-wrapper .list-item");
 let numItems = items.length;
@@ -1316,3 +1583,5 @@ $('#pagination-container').pagination({
         tourZoom();
     }
 });
+
+/****End: Guided Tour Pagination Logic****/

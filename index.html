@@ -22,7 +22,11 @@
             <div class="panel-line"></div>
             <p>Resurrection City was not constructed all at once in the summer of 1968. Over the course of several weeks, coordinated groups of volunteers from across the country, in coordination with architects and planners Tunney Lee, Ken Jadin, and John Wiebenson, mapped out and built the 519 structures that would eventually make up Resurrection City.</p>
             <p>Resurrection City, like any human settlement, served important functions around shelter, organizing social networks, and providing critical infrastructures such as sanitation, education, health care, and more. But it was also a vital staging ground for organized political activities, from large-scale protests like Solidarity Day on June 19, 1968 to more coordinated, strategic lobbying efforts that sprawled across the District's federal agencies.</p><p>In this map, we reconstruct Resurrection City in three dimensions. Click through the links below to take a curated walk through the map, or explore our recreation as a self-guided tour.</p>
-            <button type="button" class="splash-btn">
+            <div class="splash-wrapper">
+                <div class="splash-btn-container">
+                    <button class="splash-guided-btn">Take a guided tour</button>
+                    <button class="splash-explore-btn">Explore on your own</button>
+                </div>
                 <div class="splash-loading-text">
                     <span>Loading</span>
                     <div class="spinner">
@@ -31,10 +35,7 @@
                         <div class="bounce3"></div>
                     </div>
                 </div>
-                <div class="splash-loaded-text">
-                    <span>Go to the Map</span>
-                </div>
-            </button>
+            </div>
         </div>
     </div>
 
@@ -88,7 +89,6 @@
         </div>
     </div>
 
-    <!-- <div id="zoomButtons" class="right-panel-btn-container"> -->
     <div class="right-panel-btn-container">
         <div id="zoom-in-btn" class="zoom-in-btn">
             <i class="fa-solid fa-plus"></i>
@@ -101,6 +101,37 @@
         </div>
         <div id="zoomButton">
             <span class="tooltiptext">Reset map orientation</span>
+        </div>
+    </div>
+
+    <!-- Guided Tour Intro Elements -->
+
+    <div class="intro-text-holder">
+        <p class="date-sentence-text" id="dateSentence"></p>
+    </div>
+    
+    <div class="intro-date-holder">
+        <div id="dateDisplay"></div>
+    </div>
+    
+    <div class="guided-tour-side-panel">
+        <div class="title-close">
+            <div class="title-logo">
+                <!-- <img src="assets/icons/Tent_Icon.png" alt=""> -->
+                <h3>John Wiebenson and Protest Design</h3>
+            </div>        
+        </div>
+        <div class="panel-line"></div>
+        <div class="side-panel-text">
+            <p>John Wiebenson, a professor of architecture at the University of Maryland, College Park, created these diagrams that show the purposeful mix of private and public areas created in Resurrection City, some of which were created in part by their design and others happened organically through use.</p>
+            <img class="app-image" src="./assets/images/Wiebenson_1.png" alt="John Wiebenson Resurrection City schematic plan">
+            <p>They designed the most public areas like the information center and registration booths, at the western edge of the main pedestrian entrance. Resurrection City's 'Main Street' was where reporters, celebrities, federal officials, and visitors could access the encampment when the city was open to the greater public.</p>
+            <img class="app-image" src="./assets/images/Wiebenson_2.png" alt="John Wiebenson Resurrection City schematic plan">
+            <p>Just as in any other 'city', Resurrection City's architects used a classic modernist city planning approach, with a main street, 'publicly' accessible service sites along the main axis, and clusters of different residential “neighborhoods” growing outward according to a loose but clear linear plan, neighborhoods of private living spaces. The story of Resurrection City as a complex but ephemeral settlement built in the midst of all the unquestioned permanence of the Mall's monuments is remarkable - and indiscernible to visitors today.</p>
+            <img class="app-image" src="./assets/images/Wiebenson_3.png" alt="John Wiebenson Resurrection City schematic plan">
+        </div>
+        <div class="guided-tour-btn-holder">
+            <button id="guided-tour-btn" class="guided-tour-btn">Next</button>
         </div>
     </div>
 

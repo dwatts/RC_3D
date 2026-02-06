@@ -25,7 +25,7 @@
   --Background-Blue-Alt: rgba(141, 211, 199, 0.9);
   --Background-Blue-Dark: rgba(72, 120, 112, 0.9);
   --Maroon: #730900;
-  --Dark-Brown: #402e32;
+  --Dark-Brown: rgb(64, 46, 50);
   --calcite-color-text-3: white;
   --calcite-color-foreground-2: var(--Dark-Brown);
   --calcite-color-text-1: #fff;
@@ -288,6 +288,7 @@ input:checked + .slider:before {
     height: 2.5rem;
     width: 2.5rem;
     position: relative;
+    background-color: transparent;
 }
 
 .esri-widget--button {
@@ -326,6 +327,7 @@ input:checked + .slider:before {
     display: none;
     align-items: center;
     justify-content: center;
+    /* opacity: 0.2; */
 }
 
 .splash-inner {
@@ -376,16 +378,73 @@ input:checked + .slider:before {
     font-weight: 500 !important;
 }
 
-/*End font weight adjustment*/
+/*Splash Buttons Container*/
 
-.splash-btn {
+@keyframes loadPulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 0.95;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.splash-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    
+}
+
+.splash-btn-container {
+    display: flex;
+    gap: 2rem;
+}
+
+.splash-loading-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(64, 46, 50, 0.7);
+    display: none;
+    border-radius: .5rem;
+    color: white;
+    z-index: 4;
+    animation: loadPulse 2s ease-in-out infinite;
+}
+
+
+/*Splash Button Styling*/
+
+/* .splash-btn-container {
+    display: flex;
+    width: 50%;
+} */
+
+.splash-guided-btn,
+.splash-explore-btn,
+.guided-tour-btn {
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     height:2rem;
     width:10rem;
     border-radius: .5rem;
-    background-color: var(--Background);
+    background-color: var(--Dark-Brown);
     transition: all .3s;
     z-index: 2;
     border:none;
@@ -394,7 +453,9 @@ input:checked + .slider:before {
     font-size: .8rem;
 }
 
-.splash-btn:hover {
+.splash-guided-btn:hover,
+.splash-explore-btn:hover,
+.guided-tour-btn:hover {
     background-color: var(--Background);
     transform: translateY(-0.05rem);
 }
@@ -422,7 +483,7 @@ input:checked + .slider:before {
 .spinner > div {
   width: .3rem;
   height: .3rem;
-  background-color: #fff;
+  background-color: white;
   border-radius: 100%;
   display: inline-block;
   animation: sk-bouncedelay 1.2s infinite ease-in-out both;
@@ -452,6 +513,81 @@ input:checked + .slider:before {
 }
 
 /*End Splash Page*/
+
+/***Guided Tour Intro Elements***/
+
+/*Animated Intro Text */
+
+.intro-text-holder {
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    position: absolute;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.date-sentence-text {
+    font-size: 2.5rem;
+    color: white;
+    width: 40%;
+    text-align: center;
+    text-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.2);
+}
+
+/*Animated Date*/
+
+.intro-date-holder {
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    position: relative;
+    display: none;
+    /* align-items: center;
+    justify-content: center; */
+    background-color: rgba(0, 0, 0, 0);
+}
+
+#dateDisplay {
+    position: absolute;
+    top: 5rem;
+    left: 5rem;
+    z-index: 3;
+    /* display: none; */
+    font-size: 4rem;
+    color: var(--Dark-Brown);
+    text-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+/* Wiebenson Popup */
+
+.guided-tour-side-panel {
+    position: fixed;
+    top: 5rem;
+    right: 2rem;
+    height: 88%;
+    /* max-height:80%; */
+    width: 35rem;
+    background: linear-gradient(var(--Background-Blue), var(--Background-Blue-Alt));
+    z-index: 2;
+    border-radius: .25rem;
+    box-shadow: 0 1rem 3rem rgb(0, 0, 0, 0.3);
+    padding: 1rem;
+    display: none;
+}
+
+.guided-tour-btn-holder {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+/*End Guided Tour Intro Elements*/
 
 /*Timeline Container*/
 
@@ -568,7 +704,8 @@ input:checked + .slider:before {
     color: #fff;
     font-weight: 400;
     line-height: 1.35rem;
-    letter-spacing: .02rem; 
+    letter-spacing: .02rem;
+    box-shadow: 0 0 0 1px var(--Dark-Brown); 
 }
 
 .tooltiptext::after {
@@ -579,7 +716,7 @@ input:checked + .slider:before {
     margin-left: -.35rem;
     border-width: .35rem;
     border-style: solid;
-    border-color: #402e32 transparent transparent transparent;
+    border-color: var(--Dark-Brown) transparent transparent transparent;
     z-index: 1;
 }
 
