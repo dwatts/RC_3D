@@ -987,7 +987,7 @@ const imageNinePoint = new Point({
   spatialReference: SpatialReference.WebMercator
 });
 
-const imageNinePlane = Mesh.createPlane(imageNinePoint, {size: { height: 8, width: 14}, facing: "west", vertexSpace: "georeferenced"});
+const imageNinePlane = Mesh.createPlane(imageNinePoint, {size: { height: 6, width: 12}, facing: "west", vertexSpace: "georeferenced"});
 
 imageNinePlane.rotate(0,0,0);
 
