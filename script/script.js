@@ -64,13 +64,13 @@ $('.splash-guided-btn').click(function () {
     $('#dateDisplay').fadeIn(700);
     $('.left-panel-btn-container').css("display", "none");
     $('.right-panel-btn-container').css("display", "none");
-
-    // const guidedTourInfoPanel = document.querySelector(".guided-tour-side-panel");
+    $('.full-screen-transparent').css("display", "flex");
+    $('#tour-close').css("display", "none");
 
     function firstTask() {
       return new Promise((resolve) => {
         showIntroText(); 
-        goToFirstView();
+        goToFirstView(); // Duration 16 seconds
         resolve();
       });
     }
@@ -83,6 +83,8 @@ $('.splash-guided-btn').click(function () {
             goToPresetView();
             startIntroAnimation();
             showIntroDate();
+            // animateCounter(counterElement, start, end, duration);
+            
 
             setTimeout(() => {
               rcStructures.definitionExpression = "";
@@ -98,8 +100,7 @@ $('.splash-guided-btn').click(function () {
     function thirdTask() {
       return new Promise((resolve) => {
         setTimeout(() => {
-          // guidedTourInfoPanel.style.display = 'block';
-          $('.guided-tour-side-panel').fadeIn(400);
+          $('.guided-tour-side-panel').fadeIn(500);
           resolve();
         }, 13000)
       })
@@ -118,10 +119,83 @@ $('.splash-guided-btn').click(function () {
     runTourTasksSequentially();
 });
 
-//'Next' button on Wiebenson side panel - start guided tour
+//'Continue Guided Tour' button on Wiebenson side panel 
 $('#guided-tour-btn').click(function () {
   toggleTour();
-  $('.guided-tour-side-panel').fadeOut(400);
+  $('.guided-tour-side-panel').fadeOut(500);
+});
+
+//'Continue Guided Tour' button on RC City Tour panel
+$('#close-tour-btn').click(function () {
+    $('.tour-panel').removeClass('active');
+    $('.tour-btn').removeClass('on');
+
+    toggle = 1;
+
+    $('#pagination-container').pagination('selectPage', 1);
+
+    view.goTo({
+      position: {
+        spatialReference: {
+          // latestWkid: 3857,
+          wkid: 3857
+        },
+        x: -8577412.745016245,
+        y: 4705481.849946009,
+        z: 114.86931450664997
+      },
+      heading: 72.34190637837995,
+      tilt: 79.78677711088956
+    }, {
+      duration: 3000
+    });
+
+    graphicsLayer.graphics.forEach(g => {
+      g.visible = false;
+    });
+
+    $('.tour-conclusion').addClass('active');
+});
+
+//End Guided Tour' button on Conclusion panel
+$('#end-guided-tour-btn').click(function () {
+    $('.tour-conclusion').removeClass('active');
+
+    // Add map controls
+    $('.left-panel-btn-container').css("display", "flex");
+    $('.right-panel-btn-container').css("display", "flex");
+
+    $('.full-screen-transparent').css("display", "none");
+    $('.tour-panel-btn-holder').css("display", "none");
+    $('.tour-panel').css("max-height", "70vh");
+
+    $('#tour-close').css("display", "flex");
+
+    // Highlight Stuctures
+    view.whenLayerView(rcStructures).then((layerViewHighlight) => {
+      highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
+    });
+
+    // Programatically turn labels
+    $('#labelSwitch')
+      .prop('checked', true)
+      .trigger('change');
+
+    view.goTo({
+      position: {
+        spatialReference: {
+          // latestWkid: 3857,
+          wkid: 3857
+        },
+        x: -8577402.92788584,
+        y: 4705134.3496611165,
+        z: 405.9044241467491
+      },
+      heading: 54.60092337030268,
+      tilt: 61.38437711848068
+    }, {
+      duration: 3000
+    });    
 });
 
 /***Start: Guided Tour Intro Animation Functions***/
@@ -141,7 +215,7 @@ function goToFirstView() {
     heading: 88.50749854394327,
     tilt: 73.64968337378207
   }, {
-    duration: 13000
+    duration: 14000
   });      
 }
 
@@ -173,30 +247,40 @@ function showIntroText() {
     $(".intro-text-holder")
       .css("display", "flex") // set flex before showing
       .hide()
-      .fadeIn(400)
+      .fadeIn(500)
       .delay(9000)
-      
-      .fadeOut(400, function () {
-          $(this).css("display", "none");
-      });
+      .fadeOut(500)
 
-    setTimeout(() => textTypingEffect(typingText, text), 2000)
+      // .fadeOut(500, function () {
+      //     $(this).css("display", "none");
+      // });
+
+    setTimeout(() => textTypingEffect(typingText, text), 1000)
 }
 
 //Text animation function
 
 const typingText = document.querySelector(".date-sentence-text");
+//98 characters in this sentence
 const text = "Resurrection City was constructed and occupied over the course of 19 days in May and June of 1968.";
 
-function textTypingEffect(element, text, i = 0) {
-  element.textContent += text[i];
+function textTypingEffect(element, text, i = 0, startTime = null) {
+  const speed = 65;
 
-  //Add letter until end of string is reached
-  if (i === text.length -1) {
-    return;
+  function animate(timestamp) {
+    if (!startTime) startTime = timestamp;
+
+    const elapsed = timestamp - startTime;
+    const charactersToShow = Math.floor(elapsed / speed);
+
+    element.textContent = text.slice(0, charactersToShow);
+
+    if (charactersToShow < text.length) {
+      requestAnimationFrame(animate);
+    }
   }
 
-  setTimeout(()=> textTypingEffect(element, text, i + 1), 50)
+  requestAnimationFrame(animate);
 }
 
 //Date Counter 
@@ -205,48 +289,61 @@ function showIntroDate() {
   $(".intro-date-holder")
     .css("display", "flex")
     .hide()
-    .fadeIn(400)
+    .fadeIn(500)
     .delay(12000)
-    
-    .fadeOut(600, function () {
-          $(this).css("display", "none");
-    });
+    .fadeOut(700)
 
-  startDate()
+  animateTimeline();
 }
-
-//(19 days total)
-let currentDate = new Date(1968, 4, 13); // May is month 4 (0-based)
-const endDate = new Date(1968, 5, 1);   // June 1, 1968
 
 const display = document.getElementById("dateDisplay");
+const counterElement = document.querySelector(".counter");
 
-function updateDate() {
-  const formattedDate = currentDate.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric"
-  });
+// Start date - May 13, 1968
+const startDate = new Date(1968, 4, 13);
 
-  display.textContent = formattedDate;
+const start = 0;
+const end = 19;              
+const totalDateSpan = 19;    // Number of days to reach June 1
+const durationTwo = 10000;
 
-  if (currentDate >= endDate) {
-    clearInterval(timer);
-    // $('#dateDisplay').fadeOut(700);
-    return;
+function animateTimeline() {
+  let startTime = null;
+
+  function update(timestamp) {
+    if (!startTime) startTime = timestamp;
+
+    const elapsed = timestamp - startTime;
+    const progress = Math.min(elapsed / durationTwo, 1);
+
+    // Day Counter
+    const currentDay = Math.floor(start + (end - start) * progress);
+    counterElement.textContent = currentDay;
+
+    // Date Counter
+    const date = new Date(startDate);
+    const scaledOffset = Math.round((currentDay - 1) * (totalDateSpan / (end - 1)));
+    date.setDate(startDate.getDate() + scaledOffset);
+
+    const formattedDate = date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    });
+
+    display.textContent = formattedDate;
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    }
   }
 
-  currentDate.setDate(currentDate.getDate() + 1);  
+  requestAnimationFrame(update);
 }
 
-let timer;
-
-function startDate() {
-  timer = setInterval(updateDate, 526); 
-}
+animateTimeline();
 
 /***End: Guided Tour Intro Animation Functions***/
-
 
 
 /************************************************/
@@ -278,6 +375,9 @@ $('.splash-explore-btn').click(function () {
     });
 
     rcStructures.definitionExpression = "";
+    $('.tour-panel-btn-holder').css("display", "none");
+    $('#tour-close').css("display", "flex");
+    $('.tour-panel').css("max-height", "70vh");
     
     $('#labelSwitch')
       .prop('checked', true)
@@ -285,7 +385,6 @@ $('.splash-explore-btn').click(function () {
 })
 
 /***End: Close splash screen options: guided tour or self explore***/
-
 
 
 /***Start: Open guided tour panel and start guided tour***/
@@ -301,7 +400,7 @@ function toggleTour() {
     }
 
     toggle = 0;
-    $('.tour-panel').fadeIn(700);
+    $('.tour-panel').addClass('active');
     $('.tour-btn').addClass('on');
 
     view.goTo({
@@ -322,7 +421,7 @@ function toggleTour() {
   } else if (toggle == 0) {
 
     toggle = 1;
-    $('.tour-panel').fadeOut(700);
+    $('.tour-panel').removeClass('active');
     $('.tour-btn').removeClass('on');
     $('#pagination-container').pagination('selectPage', 1);
 
@@ -352,16 +451,15 @@ $('#tour-btn').click(toggleTour);
 
 /***End: Open guided tour panel and start guided tour***/
 
-
-
 /***Start: Close Tour Panel***/
 
 $('#tour-close' ).click(function(){
     toggle = 1;
 
-    $('.tour-panel').fadeOut(700);
+    $('.tour-panel').removeClass('active');
     $('.tour-btn').removeClass('on');
     $('#pagination-container').pagination('selectPage', 1);
+    
 
     //Add notable structure highlights
   
@@ -391,9 +489,6 @@ $('#tour-close' ).click(function(){
 });
 
 /***End: Close Tour Panel***/
-
-
-
 
 /***Start: Assorted controls code***/
 
@@ -497,9 +592,6 @@ $('#timelineSwitch').change(function(){
 
 /***End: Assorted controls code***/
 
-
-
-
 /***Start: Add WebScene Layers***/
 
 const rcStructures = new SceneLayer({
@@ -511,7 +603,7 @@ const rcStructures = new SceneLayer({
     mode: "on-the-ground"
   },
   popupEnabled: false,
-  definitionExpression: "Const_Time_Integer = 1"
+  definitionExpression: "Const_Time_Integer = 671"
 });
 
 const rcStructureIcons = new FeatureLayer({
@@ -558,9 +650,6 @@ const dcBuildings = new SceneLayer({
 });
 
 /***End: Add WebScene Layers***/
-
-
-
 
 /***Start: Mesh / Historic Images / Graphics Layers for Tour Images***/
 
@@ -889,13 +978,51 @@ imageEightPlane.attributes = {
 
 /*End Image Eight*/
 
+/*Image Nine*/
+
+const imageNinePoint = new Point({
+  x: -8576955.101205464,
+  y: 4705827.734806871,
+  z: 7,
+  spatialReference: SpatialReference.WebMercator
+});
+
+const imageNinePlane = Mesh.createPlane(imageNinePoint, {size: { height: 8, width: 14}, facing: "west", vertexSpace: "georeferenced"});
+
+imageNinePlane.rotate(0,0,0);
+
+imageNinePlane.components[0].material = new MeshMaterial({
+  colorTexture: {url: "./assets/images/TourImages/Stop_9.JPG"}
+});
+
+const imageNineGraphic = new Graphic({
+  geometry: imageNinePlane,
+  visible: false,
+  symbol: new MeshSymbol3D({
+    symbolLayers: [
+      new FillSymbol3DLayer({
+        material: { color: null },
+        edges: {
+          type: "solid",
+          color: "#ffffff",
+          size: 3
+        }
+      })
+    ]
+  })
+});
+
+imageNinePlane.attributes = {
+  "caption": "This is a test caption for image nine"
+};
+
+/*End Image Nine*/
+
 /***Add all image / graphics layers) */
 
-graphicsLayer.addMany([imageOneGraphic, imageTwoGraphic, imageThreeGraphic, imageFourGraphic, imageFiveGraphic, imageSixGraphic, imageSevenGraphic, imageEightGraphic]);
+graphicsLayer.addMany([imageOneGraphic, imageTwoGraphic, imageThreeGraphic, imageFourGraphic, imageFiveGraphic, imageSixGraphic, imageSevenGraphic, imageEightGraphic, imageNineGraphic]);
 
 /***End: Mesh / Historic Images / Graphics Layers for Tour Images***/
-
-
 
 /***Start: Add Custom Basemap Layers***/
 
@@ -915,9 +1042,6 @@ const hillshadeTileLayer = new TileLayer({
 const customBasemap = new Basemap({ baseLayers: [hillshadeTileLayer, vectorTileLayer] });
 
 /***End: Add Custom Basemap Layers***/
-
-
-
 
 /***Start: Create Scene and SceneView***/
 
@@ -982,8 +1106,6 @@ view.environment.weather = {
 
 /***End: Create Scene and SceneView***/
 
-
-
 /***Start: Add Compass Widget and Custom Zoom Buttons***/
 
 //Add Compass Widget
@@ -1019,9 +1141,6 @@ document.getElementById("zoom-out-btn").addEventListener("click", () => {
 
 /***End: Add Compass Widget and Custom Zoom Buttons***/
 
-
-
-
 /***Start: HitTest Cursor Pointer Functionality***/
 
 view.on("pointer-move", (event) => {
@@ -1038,9 +1157,6 @@ view.on("pointer-move", (event) => {
 });
 
 /***End: HitTest Cursor Pointer Functionality***/
-
-
-
 
 /***Start: Popup HitTest Functionality***/
 
@@ -1061,75 +1177,176 @@ view.on("immediate-click", (event) => {
       //Add Popup Content
 
       let structureName = hitResult.results[0].graphic.attributes.Name;
-      let popupIcon = document.querySelector('.popup-icon-title img')
-      let popupUse = document.querySelector('.popup-text p span');
+      let popupIcon = document.querySelector('.popup-icon-title img');
+      let popupImg = document.querySelector('.popup-text img');
+      let popupCaption = document.querySelector('.popup-text p:nth-of-type(1)')
+      let popupUse = document.querySelector('.popup-text p:nth-of-type(2) span');
+      let popupDescription = document.querySelector('.popup-text p:nth-of-type(3) span');
 
       popupTitle.innerHTML = `${structureName}`;
 
 
       if (structureName == 'Meeting Tent') {
+        // Meeting Tent
         popupIcon.src = './assets/icons/Gathering.png';
+        popupImg.src = "./assets/images/PopupImages/MeetingTent.jpg";
+        popupCaption.innerHTML = "Caption: People gather outside of tented canopy. Photo by Paul M. Schmick, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "General gathering area for resident meetings";
+        popupDescription.innerHTML = "Several large public tents, including the meeting tent, were distributed up and down Main Street to facilitate organizing and communication.";
+      } else if (structureName == 'Individual Residential') {
+        // Individual Residential
+        popupIcon.src = './assets/icons/Residential.png';
+        popupImg.src = "./assets/images/PopupImages/IndividualRes.jpg";
+        popupCaption.innerHTML = "Caption: Man inside a wooden structure at Resurrection City. Photo by Bernie Boston, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Sleeping facilities for individuals";
+        popupDescription.innerHTML = "Residential structures were designed along two scales: individual, which could accommodate two people, and group, which could fit 6-10 people. These “lean-to” style tent designs were standardized and relatively simple to assemble quickly.";
+      } else if (structureName == 'Group Residential') {
+        // Group Residential
+        popupIcon.src = './assets/icons/Residential.png';
+        popupImg.src = "./assets/images/PopupImages/MultiRes.jpg";
+        popupCaption.innerHTML = "Caption: People build a large residential structure at Resurrection City. Photo by Paul M. Schmick, Evening Star. DC Public Library, the People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Sleeping facilities for groups and families";
+        popupDescription.innerHTML = "Larger dormitory-style residences could fit up to ten people. Many residents welcomed the opportunity to customize the design of their shelters, whether by painting names, slogans, or their hometowns on the exterior, or even adding additions like a porch, awning, or rooftop deck.";
       } else if (structureName == 'Workshop / Meeting Tent') {
+        // Workshop / Meeting Tent
         popupIcon.src = './assets/icons/Gathering.png';
-        popupUse.innerHTML = "Gathering area for resident meetings and workshops"
+        popupImg.src = "./assets/images/PopupImages/MeetingTent.jpg";
+        popupCaption.innerHTML = "Caption: People gather outside of tented canopy. Photo by Paul M. Schmick, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Gathering area for resident meetings and workshops";
+        popupDescription.innerHTML = "Several large public tents, including the meeting tent, were distributed up and down Main Street to facilitate organizing and communication.";
       } else if (structureName == 'Security') {
+        // Security
         popupIcon.src = './assets/icons/Security.png';
+        popupImg.src = "./assets/images/PopupImages/Security.jpg";
+        popupCaption.innerHTML = "Caption: Security headquarters, Resurrection City. John Wiebenson Collection, University of Maryland.";
         popupUse.innerHTML = "Security staff headquarters"
+        popupDescription.innerHTML = "Security was originally handled by the Marshals, a group formed from among the residents of Resurrection City. Conflicts both between the Marshals and residents and within the organization itself around issues of excessive force prompted reforms. A new group, called the Tent City Rangers, was formed to fill in gaps of security and provide different services. A sense of competition, rather than coordination, shaped the dynamics between the Rangers and the Marshals, with negative consequences for the overall security of Resurrection City.";
       } else if (structureName == 'Campaign Leaders Compound') {
+        // Campaign Leaders Compound
         popupIcon.src = './assets/icons/City_Hall.png';
-        popupUse.innerHTML = "Leadership residential area"
+        popupImg.src = "./assets/images/Popupimages/LeadersCompound.jpg";
+        popupCaption.innerHTML = "Caption: City Hall in the process of being built at Resurrection City. Photo by Bernie Boston, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Leadership residential area";
+        popupDescription.innerHTML = "This photograph captures only some of the central leadership in the Poor People's Campaign and Resurrection City in the days leading up to construction. From left, Reies Tijerina, a spokesperson and activist in the Chicano movement and the leader of the Chicano contingent of the SCLC Poor People's March; Clifton Hill, a Native American leader and representative of the Creek tribe in Oklahoma (who left Washington not long after a confrontation with Ralph Abernathy); Rev. Bernard Lafayette, a veteran Civil Rights organizer with SNCC and the SCLC, along with a central planner of the Poor People's Campaign; and Rev. Walter Fauntroy, a Civil Rights veteran and former Congressional delegate for Washington, D.C. (1971-1991), who acted as the liaison between the NPS and federal government and organizers in the Poor People's Campaign. ";
       } else if (structureName == 'God\'s Eye Bakery') {
+        // Gods Eye Bakery
         popupIcon.src = './assets/icons/Bakery.png';
-        popupUse.innerHTML = "Bakery supplying bread to residents"
-      } else if (structureName == 'Day Care') {
+        popupImg.src = "./assets/images/Popupimages/Bakery.jpg";
+        popupCaption.innerHTML = "Caption: Man eats a piece of freshly baked bread at Resurrection City. Evening Star. DC Public Library, the People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Bakery supplying bread to residents";
+        popupDescription.innerHTML = "The God's Eye Bakery was set up and operated by volunteers from The Diggers, a radical political collective from San Francisco (but with historical roots in early modern England) that contributed to Resurrection City in the spirit of solidarity and the commons. Volunteers baked fresh bread in recycled coffee cans for residents - working 16 hours a day, the volunteers produced over 2,000 loaves in the first weeks of its operation. ";
+      } else if (structureName == 'Child Care') {
+        // Day Care
         popupIcon.src = './assets/icons/Child_Care.png';
-        popupUse.innerHTML = "Child care facilities"
+        popupImg.src = "./assets/images/PopupImages/Daycare.jpg";
+        popupCaption.innerHTML = "Caption: Children play at Resurrection City. Photo by Paul M. Schmick, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Child care facilities";
+        popupDescription.innerHTML = "Although childcare and a school were part of the original plan for Resurrection City, organizers only had the resources to open a day care center. C's day care was located on Main Street, several yards beyond City Hall towards the Washington Monument. The structure was roughly 20'x6' and housed three separate classrooms, along with a porch running the length of the center. Chairs and tables, along with chalkboards, toys, and clothing, were donated by area charities and churches. Within the building, one room was reserved for infants, with cribs and small beds. The remaining rooms were used by teachers, staff, and students for recreation, lessons, snack time, and naps. Much of the staff were social workers, teachers, childcare workers, and some were SCLC members using their vacation time to be at Resurrection City.";
       } else if (structureName == 'Entertainment Tent') {
+        // Entertainment Tent
         popupIcon.src = './assets/icons/Gathering.png';
-        popupUse.innerHTML = "Entertainment tent for residents"
+        popupImg.src = "./assets/images/PopupImages/EntertainmentTent.jpg";
+        popupCaption.innerHTML = "Caption: Nite Lite Poster. Southern Christian Leadership Conference Records, 1962-1969, 1968 June 24 Resurrection City, USA. Emory University Libraries.";
+        popupUse.innerHTML = "Entertainment tent for residents";
+        popupDescription.innerHTML = "Many different musicians, actors, and entertainers passed through Resurrection City over its duration, including Sidney Poitier, Jimmy Collier, Muddy Waters, Dizzy Gillespie, Peter Paul and Mary, and Pete Seeger. Residents also organized entertainment and recreation activities, as this flyer for a full Sunday of family-oriented programming shows.";
       } else if (structureName == 'Department of Sanitation') {
+        // Department of Sanitation
         popupIcon.src = './assets/icons/Mechanic.png';
-        popupUse.innerHTML = "Facilities for santitation workers"
+        popupImg.src = "";
+        popupCaption.innerHTML = "";
+        popupUse.innerHTML = "Facilities for santitation workers";
+        popupDescription.innerHTML = "Add Department of Sanitaion information here.";
       } else if (structureName == 'Medical Unit' || structureName == 'Medical Services') {
+        // Medical Services
         popupIcon.src = './assets/icons/Medical.png';
-        popupUse.innerHTML = "Medical services for residents"
+        popupImg.src = "";
+        popupCaption.innerHTML = "";
+        popupUse.innerHTML = "Medical services for residents";
+        popupDescription.innerHTML = "Doctors made rounds starting each morning after breakfast, but on-call care was also available at the two medical units onsite: one owned by the Seventh Day Adventists, and the other by the District of Columbia Health Department. 300 members of the Medical Committee for Human Rights, an organization formed in 1965 by doctors and providers in Selma, provide the encampment's medical care. Everything from routine vaccinations for measles and polio to blood tests and X-rays, along with mental health care, was provided through Resurrection City's medical team.";
       } else if (structureName == 'Showers') {
+        // Showers
         popupIcon.src = './assets/icons/Showers.png';
-        popupUse.innerHTML = "Shower facilities"
+        popupImg.src = "./assets/images/Popupimages/Showers.jpg";
+        popupCaption.innerHTML = "Caption: Two men lay pipe into the ground at Resurrection City. Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Shower facilities";
+        popupDescription.innerHTML = "Despite ambitious plans to build and operate basic sanitation infrastructure like showers and running water, the limitations of Resurrection City's geography - its low-lying land, under the ownership of the federal government, and the limited duration of the encampment's permit - meant that a functional hygiene system was never put in. Instead, residents were bussed offsite to nearby churches and universities to bathe.";
       } else if (structureName == 'Dining Area') {
+        // Dining Area
         popupIcon.src = './assets/icons/Food_Service.png';
-        popupUse.innerHTML = "Main gathering area for food services"
+        popupImg.src = "./assets/images/PopupImages/DiningTent.JPG";
+        popupCaption.innerHTML = "Caption: Dining tent interior with people eating. Photo by John Vachon, Look Magazine. Library of Congress.";
+        popupUse.innerHTML = "Main gathering area for food services";
+        popupDescription.innerHTML = "The dining tent became a central social and meeting site for residents and organizers throughout the encampment. Despite the strained resources of Resurrection City, which made it impossible to provide hot meals on a regular basis, residents gravitated to the dining tents to socialize over a cup of coffee. John Wiebenson, an architect who was deeply involved in the planning and construction phases of Resurrection City, noted that the many entry points into the dining tent, along with its central location, made it a particularly inviting place for people to come and gather.";
       } else if (structureName == 'Food Storage Trailer') {
+        // Food Storage Trailer
         popupIcon.src = './assets/icons/Food_Storage.png';
-        popupUse.innerHTML = "Refrigerated trailers for onsite food storage"
+        popupImg.src = "./assets/images/PopupImages/FoodStorage.jpg";
+        popupCaption.innerHTML = "Caption: Resurrection City's dining tent. Photo by Bernie Boston, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Refrigerated trailers for onsite food storage";
+        popupDescription.innerHTML = "Approximately 25 tons of donated food reached Resurrection City every day to feed residents. One hot meal was prepared in off-site kitchens at Howard University, St. John's High School, and St. Stephen's Church.";
       } else if (structureName == 'Toilet') {
+        // Toilets
         popupIcon.src = './assets/icons/Restroom.png';
-        popupUse.innerHTML = "Restroom facilities for residents"
+        popupImg.src = "./assets/images/PopupImages/Toilets.png";
+        popupCaption.innerHTML = "Caption: Truck full of portable bathrooms arrives at Resurrection City. Photo by Ray Lustig, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection";
+        popupUse.innerHTML = "Restroom facilities for residents";
+        popupDescription.innerHTML = "Portable chemical toilets (twelve in total) were distributed throughout Resurrection City's residential areas, which were formed into compounds composed of nine residential structures (housing roughly 50 people) and an accompanying shower and toilet area.";
       } else if (structureName == 'Construction Warehouse Tent') {
+        // Construction Tent
         popupIcon.src = './assets/icons/City_Hall.png';
-        popupUse.innerHTML = "Central area for construction supply distribution"
+        popupImg.src = "";
+        popupCaption.innerHTML = "";
+        popupUse.innerHTML = "Central area for construction supply distribution";
+        popupDescription.innerHTML = "Add Construction Tent Information here.";
       } else if (structureName == 'City Hall') {
+        // City Hall
         popupIcon.src = './assets/icons/City_Hall.png';
-        popupUse.innerHTML = "Center of governance for Resurrection City"
+        popupImg.src = "./assets/images/PopupImages/CityHall.jpg";
+        popupCaption.innerHTML = "Caption: Reies Tijerina, Clifton Hill, Reverend Bernard Lafayette, and Reverend Walter Fauntroy. Photo by Paul M. Schmick, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Center of governance for Resurrection City";
+        popupDescription.innerHTML = "Located near the center of Main Street, Resurrection City's primary thoroughfare, City Hall served as the symbolic and practical hub of political activity. City Hall was also an important base of operations with electricity and phone access, and a place where residents could organize for daily marches and lobbying efforts. Although much of the SCLC senior staff, including Ralph Abernathy, lived offsite at the nearby Pitt Motel, they spent most of their time onsite in City Hall.";
       } else if (structureName == 'Main Gathering Tent') {
+        // Main Gathering Tent
         popupIcon.src = './assets/icons/Gathering.png';
-        popupUse.innerHTML = "Main gathering area for residents"
+        popupImg.src = "./assets/images/PopupImages/MainGatheringTent.JPG";
+        popupCaption.innerHTML = "Caption: Main Gathering Tent interior. 6/23/1968. Photo by John Vachon, Look Magazine. Library of Congress.";
+        popupUse.innerHTML = "Main gathering area for residents";
+        popupDescription.innerHTML = "In the main gathering tent, residents could swap supplies and coordinate plans for off-site meetings and protests.";
       } else if (structureName == 'Information Services / Donations / Art Booth') {
+        // Information Services / Donations / Art Booth
         popupIcon.src = './assets/icons/Public_Info.png';
-        popupUse.innerHTML = "Donation facilities"
+        popupImg.src = './assets/images/Popupimages/InfoTent.jpg';
+        popupCaption.innerHTML = "Caption: Women walking through mud in Resurrection City. Photo by Darrell C. Crain. 6/1/1968. DC Public Library, the People's Archive p35 Darrell C. Crain, Jr. Photograph Collection, 1968 Resurrection City and Solidarity Day";
+        popupUse.innerHTML = "Donation facilities";
+        popupDescription.innerHTML = "Just inside Resurrection's City's entrance, visitors and residents were oriented towards these basic information service areas, as well as a well-stocked donations tent that provided clothing and supplies.";
       } else if (structureName == 'Volunteer Sign-in Booth') {
-        popupIcon.src = './assets/icons/Public_Info.png';
-        popupUse.innerHTML = "Volunteer marshalling area"
+        // Volunteer Sign-in Booth
+        popupIcon.src = "./assets/icons/Public_Info.png";
+        popupImg.src = "";
+        popupCaption.innerHTML = "";
+        popupUse.innerHTML = "Volunteer marshalling area";
+        popupDescription.innerHTML = "Add Volunteer Sign-in Booth information here.";
       } else if (structureName == 'Dental Services') {
+        // Dental Services
         popupIcon.src = './assets/icons/Medical.png';
-        popupUse.innerHTML = "Dental services for residents"
+        popupImg.src = "";
+        popupCaption.innerHTML = "";
+        popupUse.innerHTML = "Dental services for residents";
+        popupDescription.innerHTML = "Two dental vans provided care to Resurrection City's residents throughout the encampment under the leadership of Dr. Joseph L. Henry, then the Dean of the Howard University School of Dentistry. Volunteer physicians and dentists on duty noted that many members of the Poor People's Campaign had never seen a doctor or dentist before.";
       } else if (structureName == 'Seventh Day Adventist') {
+        // 7th Day Adventist
         popupIcon.src = './assets/icons/Public_Info.png';
-        popupUse.innerHTML = "Sevent Day Adventists headquarters"
+        popupImg.src = "./assests/images/Popupimages/SeventhDayAdvent.jpg";
+        popupCaption.innerHTML = "Caption: Seventh-Day Adventist Welfare Service Truck at Resurrection City. Photo by Darrell C. Crain. 6/1/1968. DC Public Library, The People's Archive, p 35 Darrell C. Crain, Jr. Photograph Collection, 1968 Resurrection City and Solidarity Day.";
+        popupUse.innerHTML = "Sevent Day Adventists Services";
+        popupDescription.innerHTML = "The Seventh-Day Adventist Church provided welfare and medical services in Resurrection City. The organization's mission as an NGO focuses on humanitarian relief efforts around the world.";
       } else if (structureName == 'Public Information Pavilion') {
+        // Public Information Pavilion
         popupIcon.src = './assets/icons/Public_Info.png';
-        popupUse.innerHTML = "Primary area for public information"
+        popupImg.src = "";
+        popupCaption.innerHTML = "";
+        popupUse.innerHTML = "Primary area for public information";
+        popupDescription.innerHTML = "Add Public Info Pavillion information here.";
       } else {
         ""
       };
@@ -1166,8 +1383,6 @@ view.on("immediate-click", (event) => {
 /***End: Popup HitTest Functionality***/
 
 
-
-
 /***Start: Add Special Highlight for Selected RC Structures***/
 
 const specificIds = [10, 56, 57, 58, 59, 60, 61, 62, 63, 99, 100, 101, 102, 104, 105, 106, 143, 153, 157, 267, 268, 422, 499, 652, 653, 677, 680, 687, 688, 689, 711, 712];
@@ -1180,21 +1395,20 @@ let highlightHandle;
 /***End: Add Special Highlight for Selected RC Structures***/
 
 
-
-
 /***See Camera Coordinates in Console***/
 
-view.watch('camera.position', function(newValue, oldValue, property, object) {
-  console.log(property , newValue);
-});
+// view.watch('camera.position', function(newValue, oldValue, property, object) {
+//   console.log(property , newValue);
+// });
 
-view.watch('camera.heading', function(newValue, oldValue, property, object) {
-  console.log(property , newValue);
-});
+// view.watch('camera.heading', function(newValue, oldValue, property, object) {
+//   console.log(property , newValue);
+// });
 
-view.watch('camera.tilt', function(newValue, oldValue, property, object) {
-  console.log(property , newValue);
-});
+// view.watch('camera.tilt', function(newValue, oldValue, property, object) {
+//   console.log(property , newValue);
+// });
+
 
 /***Start: Timeline animation for both guided tour intro and timeline widget***/
 
@@ -1322,7 +1536,6 @@ document.getElementById("resetBtn").addEventListener("click", resetAnimation);
 /***End: Timeline animation for both guided tour intro and timeline widget***/
 
 
-
 /****Start: Update splashscreen UI after DC Buildings Layer Load Complete****/
 
 const loadingText = document.querySelector(".splash-loading-text");
@@ -1330,20 +1543,11 @@ const loadingText = document.querySelector(".splash-loading-text");
 
 view.whenLayerView(dcBuildings).then((layerView) => {
   reactiveUtils.whenOnce(() => !layerView.updating).then(() => {
-    // splashGuidedButton.style.background = 'var(--Dark-Brown)'
-    // splashGuidedButton.style.cursor = 'pointer'
-    // splashGuidedButton.disabled = false;
-    // splashExploreButton.style.background = 'var(--Dark-Brown)'
-    // splashExploreButton.style.cursor = 'pointer'
-    // splashExploreButton.disabled = false;
     loadingText.style.display = 'none';
-    // loadedText.style.display = 'flex';
-    // console.log('layers loaded')
   });
 });
 
 /****End: Update splashscreen UI after DC Buildings Layer Load Complete****/
-
 
 
 /****Start: Guided Tour Pagination Logic****/
@@ -1384,7 +1588,8 @@ $('#pagination-container').pagination({
                 heading: 83.59418325714013,
                 tilt: 84.22649756027022
             }, {
-              duration: 3000
+              duration: 3000,
+              easing: "expo-in"
             });
 
             graphicsLayer.graphics.forEach(g => {
@@ -1410,7 +1615,8 @@ $('#pagination-container').pagination({
                 heading: 70.35532553222679,
                 tilt: 86.11341892628539
             }, {
-              duration: 3000
+              duration: 3000,
+              easing: "expo-in"
             });
 
             graphicsLayer.graphics.forEach(g => {
@@ -1436,7 +1642,8 @@ $('#pagination-container').pagination({
                 heading: 70.62430450730903,
                 tilt: 83.49760791353782
             }, {
-              duration: 3500
+              duration: 3000,
+              easing: "expo-in"
             });
 
             graphicsLayer.graphics.forEach(g => {
@@ -1462,7 +1669,8 @@ $('#pagination-container').pagination({
                 heading: 174.7211623546343,
                 tilt: 84.40962104687159
             }, {
-              duration: 4000
+              duration: 3000,
+              easing: "expo-in"
             });
 
             graphicsLayer.graphics.forEach(g => {
@@ -1488,7 +1696,8 @@ $('#pagination-container').pagination({
                 heading: 77.67761909751498,
                 tilt: 82.84882863924025
             }, {
-              duration: 4000
+              duration: 3000,
+              easing: "expo-in"
             });
 
             graphicsLayer.graphics.forEach(g => {
@@ -1514,7 +1723,8 @@ $('#pagination-container').pagination({
                 heading: 174.9596704992528,
                 tilt: 82.06501693126847
             }, {
-              duration: 3500
+              duration: 3000,
+              easing: "expo-in"
             });
 
             graphicsLayer.graphics.forEach(g => {
@@ -1540,7 +1750,8 @@ $('#pagination-container').pagination({
                 heading: 175.39613210790532,
                 tilt: 74.14001875546752
             }, {
-              duration: 3500
+              duration: 3000,
+              easing: "expo-in"
             });
 
             graphicsLayer.graphics.forEach(g => {
@@ -1566,7 +1777,8 @@ $('#pagination-container').pagination({
                 heading: 105.06355952716257,
                 tilt: 75.64944936130252
             }, {
-              duration: 4500
+              duration: 3000,
+              easing: "expo-in"
             });
 
             graphicsLayer.graphics.forEach(g => {
@@ -1574,6 +1786,33 @@ $('#pagination-container').pagination({
                 g.visible = false;
               } else {
                 imageEightGraphic.visible = true;
+              }
+            });
+
+          } else if (pageNumber == 9) {
+
+            view.goTo({
+                position: {
+                  spatialReference: {
+                    // latestWkid: 3857,
+                    wkid: 3857
+                  },
+                  x: -8576989.156110896,
+                  y: 4705827.416736907,
+                  z: 8.81208825390786
+                },
+                heading: 85.55647711539673,
+                tilt: 83.53553024037963
+            }, {
+              duration: 3000,
+              easing: "expo-in"
+            });
+
+            graphicsLayer.graphics.forEach(g => {
+              if (g !== imageNineGraphic) {
+                g.visible = false;
+              } else {
+                imageNineGraphic.visible = true;
               }
             });
 

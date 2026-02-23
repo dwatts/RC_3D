@@ -247,13 +247,6 @@ input:checked + .slider:before {
 
 /*Zoom In / Out Button*/
 
-/* .zoom-in-btn,
-.zoom-out-btn {
-    bottom: 4rem;
-    right: 4rem;
-    z-index: 2
-} */
-
 .zoom-in-btn,
 .zoom-out-btn {
     cursor: pointer;
@@ -401,7 +394,6 @@ input:checked + .slider:before {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
-    
 }
 
 .splash-btn-container {
@@ -425,7 +417,6 @@ input:checked + .slider:before {
     z-index: 4;
     animation: loadPulse 2s ease-in-out infinite;
 }
-
 
 /*Splash Button Styling*/
 
@@ -451,6 +442,7 @@ input:checked + .slider:before {
     color: #fff;
     font-family: var(--Bodoni);
     font-size: .8rem;
+    position: relative;
 }
 
 .splash-guided-btn:hover,
@@ -458,6 +450,16 @@ input:checked + .slider:before {
 .guided-tour-btn:hover {
     background-color: var(--Background);
     transform: translateY(-0.05rem);
+}
+
+.guided-tour-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.25);
+    animation: evenPulse 2.2s ease-out infinite;
+    pointer-events: none;
 }
 
 /* Loading / Loaded Button Text */
@@ -536,58 +538,54 @@ input:checked + .slider:before {
     color: white;
     width: 40%;
     text-align: center;
-    text-shadow: 0 0.5rem 1rem rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0.75rem 1.5rem rgba(255, 255, 255, 0.2);
 }
 
 /*Animated Date*/
 
 .intro-date-holder {
-    bottom: 0;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 3;
-    position: relative;
     display: none;
-    /* align-items: center;
-    justify-content: center; */
-    background-color: rgba(0, 0, 0, 0);
-}
-
-#dateDisplay {
+    flex-direction: column;
     position: absolute;
     top: 5rem;
     left: 5rem;
     z-index: 3;
-    /* display: none; */
+    width: 22rem;
+}
+
+#dateDisplay {
     font-size: 4rem;
     color: var(--Dark-Brown);
     text-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: center;
 }
 
-/* Wiebenson Popup */
-
-.guided-tour-side-panel {
-    position: fixed;
-    top: 5rem;
-    right: 2rem;
-    height: 88%;
-    /* max-height:80%; */
-    width: 35rem;
-    background: linear-gradient(var(--Background-Blue), var(--Background-Blue-Alt));
-    z-index: 2;
-    border-radius: .25rem;
-    box-shadow: 0 1rem 3rem rgb(0, 0, 0, 0.3);
-    padding: 1rem;
-    display: none;
+.counter-holder {
+    display: flex;
+    width: 100%;
+    justify-content: center;
 }
 
-.guided-tour-btn-holder {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
+.counter {
+    margin-left: .5rem;
+    font-size: 3rem;
+    color: var(--Dark-Brown);
 }
 
-/*End Guided Tour Intro Elements*/
+.counter-holder div:first-of-type {
+    font-size: 3rem;
+    color: var(--Dark-Brown);
+}
+
+.date-panel-line {
+    width: 100%;
+    height: 4px;
+    background-color: var(--Dark-Brown);
+    margin: .5rem 0;
+    border-radius: 99px;
+}
 
 /*Timeline Container*/
 
@@ -893,14 +891,13 @@ input:checked + .slider:before {
 
 /*End Side Panel*/
 
-/* Tour Panel */
+/* Constructing Resurrection City Panel - Guided Tour Panel 1 */
 
-.tour-panel {
+.guided-tour-side-panel {
     position: fixed;
     top: 5rem;
-    left: 2rem;
-    height: 40rem;
-    max-height:70%;
+    right: 2rem;
+    height: 88%;
     width: 35rem;
     background: linear-gradient(var(--Background-Blue), var(--Background-Blue-Alt));
     z-index: 2;
@@ -910,10 +907,50 @@ input:checked + .slider:before {
     display: none;
 }
 
+.guided-tour-btn-holder {
+    margin-top: .75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* End Constructing Resurrection City Panel - Guided Tour Panel 1 */
+
+/* Guided Tour Pagination - Guided Tour Panel 2 */
+
+#tour-close {
+    display: block;
+}
+
+.tour-panel {
+    position: fixed;
+    opacity: 0;
+    transition: opacity 0.7s ease;
+    pointer-events: none;
+    top: 5rem;
+    left: 2rem;
+    width: 35rem;
+    height: auto;
+    max-height: 88vh;
+    background: linear-gradient(var(--Background-Blue), var(--Background-Blue-Alt));
+    z-index: 2;
+    border-radius: .25rem;
+    box-shadow: 0 1rem 3rem rgb(0, 0, 0, 0.3);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.tour-panel.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 .list-wrapper {
-	padding: .2rem 0;
+    padding: .2rem 0;
     margin-bottom: .75rem;
-    height: 84%;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
 }
 
@@ -968,18 +1005,39 @@ input:checked + .slider:before {
     height: 30px;                
     color: #fff;
     text-decoration: none;
-    /* border: 1px solid #EEE; */
     border-radius: 50%;
     background-color: var(--Background-Blue);
     box-shadow: 0 1rem 3rem rgb(0, 0, 0, 0.3);
     transition: all .3s;
 }
 
+/* Pulse animation for right pagination button */
+
+.simple-pagination li:last-child {
+  position: relative;
+  padding: 0px;
+  background: transparent;
+  color: white;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.simple-pagination li:last-child::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 5px solid var(--Dark-Brown);
+  animation: pulse 1.5s infinite;
+  z-index: -1;
+}
+
+/* End Pulse animation for right pagination button */
+
 .simple-pagination li a:hover {
     background-color: var(--Dark-Brown);
     transform: translateY(-0.09rem);
 }
-
 
 .simple-pagination .current {
 	color: #FFF;
@@ -992,7 +1050,65 @@ input:checked + .slider:before {
 	background: var(--Background-Blue);
 }
 
-/* End Tour Panel */
+.tour-panel-btn-holder {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* End Guided Tour Pagination - Guided Tour Panel 2 */
+
+/* Full Screen Transparent Div for Guided Tour */
+
+.full-screen-transparent {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;  
+    height: 100vh;
+    background: transparent;
+    z-index: 1;
+    display: none;
+}
+
+/* End Full Screen Transparent Div for Guided Tour */
+
+/* Tour Conclusion Panel - Guided Tour Panel 3 */
+
+.tour-conclusion {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    opacity: 0;
+    transition: opacity 0.7s ease;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.tour-conclusion.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.tour-conclusion-panel {
+    width: 40rem;
+    height: auto;
+    background: linear-gradient(var(--Background-Blue), var(--Background-Blue-Alt));
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    border-radius: .5rem;
+    padding: 1rem;
+}
+
+
+/* End Tour Conclusion Panel - Guided Tour Panel 3 */
 
 /*About Panel*/
 
@@ -1065,16 +1181,18 @@ input:checked + .slider:before {
 }
 
 .modal-inner {
-    width: 50rem;
-    /* height: 30rem; */
-    height: auto;
+    display: inline-block;
+    width: auto;
+    max-width: 50rem;
+    max-height: 90vh;
     background: linear-gradient(var(--Background-Blue), var(--Background-Blue-Alt));
     padding: 1.5rem;
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    position: relative;
     border-radius: .5rem;
+    overflow: hidden;
 }
 
 .modal-close {
@@ -1092,10 +1210,19 @@ input:checked + .slider:before {
 }
 
 .modal-inner img {
-    width: 100%;
-    margin-top: 1.5rem;
+    max-width: 100%;
+    max-height: calc(90vh - 5rem);
+    height: auto;
+    width: auto;
+    object-fit: contain;
     border-radius: .5rem;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.15);
+    margin-top: 1.5rem;
+}
+
+.modal-transcript-text {
+    width: 100%;
+    height: 85%;
+    overflow-y: auto;
 }
 
 /***End About Modal***/
@@ -1116,10 +1243,6 @@ input:checked + .slider:before {
     z-index: 2;
     border-radius: .5rem;
     padding: 20px;
-}
-
-.popup-container {
-    overflow-y: auto;
 }
 
 .popup-close {
@@ -1161,6 +1284,31 @@ input:checked + .slider:before {
     width: 4rem;
 }
 
+.popup-text {
+    overflow-y: auto;
+    max-height: 60vh;
+    padding-right: .5rem;
+    padding-bottom: .5rem;
+}
+
+.popup-text img {
+    width: 100%;
+    border-radius: .25rem;
+    cursor: pointer;
+    box-shadow: 0 .25rem 1rem rgb(0, 0, 0, 0.3);
+    margin: .5rem 0;
+}
+
+.popup-text p:nth-of-type(1) {
+    font-family: var(--Bodoni);
+    font-size: .75rem;
+    font-weight: 400;
+    color: var(--Dark-Brown);
+    line-height: 1rem;
+    letter-spacing: .02rem;
+    padding-top: 0;
+}
+
 .popup-text p {
     font-family: var(--Anton);
     font-size: 1rem;
@@ -1169,7 +1317,6 @@ input:checked + .slider:before {
     line-height: 1.35rem;
     letter-spacing: .1rem;
     padding-top: .5rem;
-    
 }
 
 .popup-text span {
@@ -1182,48 +1329,39 @@ input:checked + .slider:before {
     margin-left: .5rem;
 }
 
-
-
-/*.popup .panel-line {
-    margin: 0;
-}
-
-.article {
-    font-family: var(--Anton);
-    color: var(--Dark-Brown);
-    letter-spacing: .2rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    text-align: center;
-    padding: .5rem 0;
-    text-transform: uppercase;
-}
-
-.article-container {
-    display: flex;
-    justify-content: center;
-}
-
-.newspaper {
-    font-family: var(--Bodoni);
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--Dark-Brown);
-    padding: .5rem 0;
-}
-
-.place,
-.date {
-    font-family: var(--Bodoni);
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--Dark-Brown);
-    padding-bottom: .15rem;
-}
-
-.place-date-container {
-    display: flex;
-}
-
 /***End General Popup Styling***/
 
+
+
+/***General Key Frames Animation Styling***/
+
+/*Pulse animation for Guided Tour Pagination Buttons*/
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+}
+
+/*Pulse animation for General Buttons*/
+
+@keyframes evenPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.25);
+    }
+    70% {
+        box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+    }
+}
