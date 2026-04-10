@@ -171,22 +171,24 @@ $('#end-guided-tour-btn').click(function () {
 
     $('#tour-close').css("display", "flex");
 
+    // Add Labels
+    labelX = 1;
+    addRemoveLabels();
+
+
     // Highlight Stuctures
     view.whenLayerView(rcStructures).then((layerViewHighlight) => {
       highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
     });
 
     // Programatically turn labels
-    $('#labelSwitch')
-      .prop('checked', true)
-      .trigger('change');
+    // $('#labelSwitch')
+    //   .prop('checked', true)
+    //   .trigger('change');
 
     view.goTo({
       position: {
-        spatialReference: {
-          // latestWkid: 3857,
-          wkid: 3857
-        },
+        spatialReference: { wkid: 3857 },
         x: -8577402.92788584,
         y: 4705134.3496611165,
         z: 405.9044241467491
@@ -379,9 +381,16 @@ $('.splash-explore-btn').click(function () {
     $('#tour-close').css("display", "flex");
     $('.tour-panel').css("max-height", "70vh");
     
-    $('#labelSwitch')
-      .prop('checked', true)
-      .trigger('change');
+    // $('#labelSwitch')
+    //   .prop('checked', true)
+    //   .trigger('change');
+
+    // rcStructureIcons.visible = true
+    // rcStructureIcons.labelingInfo = [structureUseLabel]
+    // newDealBuildingsLabelPoint.labelingInfo = [newDealLabel]
+
+    labelX = 1;
+    addRemoveLabels(); 
 })
 
 /***End: Close splash screen options: guided tour or self explore***/
@@ -394,10 +403,31 @@ let toggle = 1;
 function toggleTour() {
   if (toggle == 1) {
 
+    //Close all side panels
+    $('.side-panel').removeClass('on');
+    $('.help-panel').removeClass('on');
+    $('#panel-btn').removeClass('on');
+    $('#help-btn').removeClass('on');
+
+    // Hide map controls
+    $('.left-panel-btn-container').css("display", "none");
+    $('.right-panel-btn-container').css("display", "none");
+
+    // Close all popups, remove highlights
+    $('#cardId').fadeOut();
+    highlight?.remove();
+
     // Remove notable structure highlights
     if (highlightHandle) {
       highlightHandle.remove();
     }
+
+    // Remove structure labels
+    labelX = 0;
+    addRemoveLabels();
+
+    // Add transparent fullscreen div to prevent map interaction
+    $('.full-screen-transparent').css("display", "flex");
 
     toggle = 0;
     $('.tour-panel').addClass('active');
@@ -420,6 +450,13 @@ function toggleTour() {
 
   } else if (toggle == 0) {
 
+    // Add structure labels
+    labelX = 1;
+    addRemoveLabels();
+
+    // Remove transparent fullscreen div to prevent map interaction
+    $('.full-screen-transparent').css("display", "none");
+
     toggle = 1;
     $('.tour-panel').removeClass('active');
     $('.tour-btn').removeClass('on');
@@ -433,12 +470,12 @@ function toggleTour() {
     view.goTo({
       position: {
         spatialReference: { wkid: 3857 },
-        x: -8576700.517221361,
-        y: 4704926.522271065,
-        z: 748.4846795396879
+        x: -8577402.92788584,
+        y: 4705134.3496611165,
+        z: 405.9044241467491
       },
-      heading: 359.4376327221278,
-      tilt: 38.177992495378874
+      heading: 54.60092337030268,
+      tilt: 61.38437711848068
     }, { duration: 3000 });
 
     graphicsLayer.graphics.forEach(g => {
@@ -454,6 +491,18 @@ $('#tour-btn').click(toggleTour);
 /***Start: Close Tour Panel***/
 
 $('#tour-close' ).click(function(){
+    
+    // Show map controls
+    $('.left-panel-btn-container').css("display", "flex");
+    $('.right-panel-btn-container').css("display", "flex");  
+
+    // Add structure labels
+    labelX = 1;
+    addRemoveLabels();
+  
+    // Remove transparent fullscreen div to prevent map interaction
+    $('.full-screen-transparent').css("display", "none");
+  
     toggle = 1;
 
     $('.tour-panel').removeClass('active');
@@ -468,17 +517,14 @@ $('#tour-close' ).click(function(){
     });
 
     view.goTo({
-        position: {
-          spatialReference: {
-            // latestWkid: 3857,
-            wkid: 3857
-          },
-          x: -8576700.517221361,
-          y: 4704926.522271065,
-          z: 748.4846795396879
-        },
-        heading: 359.4376327221278,
-        tilt: 38.177992495378874
+      position: {
+        spatialReference: { wkid: 3857 },
+        x: -8577402.92788584,
+        y: 4705134.3496611165,
+        z: 405.9044241467491
+      },
+      heading: 54.60092337030268,
+      tilt: 61.38437711848068
     }, {
       duration: 3000
     });
@@ -538,57 +584,49 @@ $('#popup-close' ).click(function(){
 
 //Turn on RC structures labels
 
-$('#labelSwitch').change(function(){
-  if ($(this).is(':checked')) {
-    rcStructureIcons.visible = true
-    rcStructureIcons.labelingInfo = [structureUseLabel]
-    newDealBuildingsLabelPoint.labelingInfo = [newDealLabel]
-  } else {
-    rcStructureIcons.visible = false
-    rcStructureIcons.labelingInfo = [""]
-    newDealBuildingsLabelPoint.labelingInfo = [""]
-  }
-})
+let labelX = 1;
 
-//Toggle Tree Layer
-
-$('#highlightSwitch').change(function(){
-  if ($(this).is(':checked')) {
-    highlightHandle.remove();
+function addRemoveLabels() {
+  if (labelX === 1) {
+    // x = 0;
+    rcStructureIcons.visible = true;
+    rcStructureIcons.labelingInfo = [structureUseLabel];
+    newDealBuildingsLabelPoint.labelingInfo = [newDealLabel];
   } else {
-    view.whenLayerView(rcStructures).then((layerViewHighlight) => {
-      highlightHandle = layerViewHighlight.highlight(specificIds, { name: "notable"});
-    });
+    // x = 1;
+    rcStructureIcons.visible = false;
+    rcStructureIcons.labelingInfo = [];
+    newDealBuildingsLabelPoint.labelingInfo = [];
   }
-})
+}
 
 //Change weather
 
-$('#weatherSwitch').change(function(){
-  if ($(this).is(':checked')) {
-    view.environment.weather = {
-      type: "rainy",
-      precipitation: 0.7,
-      cloudCover: 0.7  
-    };
-  } else {
-    view.environment.weather = {
-      type: "cloudy",
-      cloudCover: 0.5  
-    };
-  }
-})
+// $('#weatherSwitch').change(function(){
+//   if ($(this).is(':checked')) {
+//     view.environment.weather = {
+//       type: "rainy",
+//       precipitation: 0.7,
+//       cloudCover: 0.7  
+//     };
+//   } else {
+//     view.environment.weather = {
+//       type: "cloudy",
+//       cloudCover: 0.5  
+//     };
+//   }
+// })
 
 //Toggle Timeline Div
 
-$('#timelineSwitch').change(function(){
-  if ($(this).is(':checked')) {
-    $('.timeline').addClass('show');
-    resetAnimation();
-  } else {
-    $('.timeline').removeClass('show');
-  }
-})
+// $('#timelineSwitch').change(function(){
+//   if ($(this).is(':checked')) {
+//     $('.timeline').addClass('show');
+//     resetAnimation();
+//   } else {
+//     $('.timeline').removeClass('show');
+//   }
+// })
 
 /***End: Assorted controls code***/
 
@@ -1190,63 +1228,63 @@ view.on("immediate-click", (event) => {
         // Meeting Tent
         popupIcon.src = './assets/icons/Gathering.png';
         popupImg.src = "./assets/images/PopupImages/MeetingTent.jpg";
-        popupCaption.innerHTML = "Caption: People gather outside of tented canopy. Photo by Paul M. Schmick, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupCaption.innerHTML = "People gather outside of tented canopy. Photo by Paul M. Schmick, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "General gathering area for resident meetings";
         popupDescription.innerHTML = "Several large public tents, including the meeting tent, were distributed up and down Main Street to facilitate organizing and communication.";
       } else if (structureName == 'Individual Residential') {
         // Individual Residential
         popupIcon.src = './assets/icons/Residential.png';
         popupImg.src = "./assets/images/PopupImages/IndividualRes.jpg";
-        popupCaption.innerHTML = "Caption: Man inside a wooden structure at Resurrection City. Photo by Bernie Boston, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupCaption.innerHTML = "Man inside a wooden structure at Resurrection City. Photo by Bernie Boston, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Sleeping facilities for individuals";
         popupDescription.innerHTML = "Residential structures were designed along two scales: individual, which could accommodate two people, and group, which could fit 6-10 people. These “lean-to” style tent designs were standardized and relatively simple to assemble quickly.";
       } else if (structureName == 'Group Residential') {
         // Group Residential
         popupIcon.src = './assets/icons/Residential.png';
         popupImg.src = "./assets/images/PopupImages/MultiRes.jpg";
-        popupCaption.innerHTML = "Caption: People build a large residential structure at Resurrection City. Photo by Paul M. Schmick, Evening Star. DC Public Library, the People's Archive, Washington Star Photograph Collection.";
+        popupCaption.innerHTML = "People build a large residential structure at Resurrection City. Photo by Paul M. Schmick, Evening Star. DC Public Library, the People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Sleeping facilities for groups and families";
         popupDescription.innerHTML = "Larger dormitory-style residences could fit up to ten people. Many residents welcomed the opportunity to customize the design of their shelters, whether by painting names, slogans, or their hometowns on the exterior, or even adding additions like a porch, awning, or rooftop deck.";
       } else if (structureName == 'Workshop / Meeting Tent') {
         // Workshop / Meeting Tent
         popupIcon.src = './assets/icons/Gathering.png';
         popupImg.src = "./assets/images/PopupImages/MeetingTent.jpg";
-        popupCaption.innerHTML = "Caption: People gather outside of tented canopy. Photo by Paul M. Schmick, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupCaption.innerHTML = "People gather outside of tented canopy. Photo by Paul M. Schmick, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Gathering area for resident meetings and workshops";
         popupDescription.innerHTML = "Several large public tents, including the meeting tent, were distributed up and down Main Street to facilitate organizing and communication.";
       } else if (structureName == 'Security') {
         // Security
         popupIcon.src = './assets/icons/Security.png';
         popupImg.src = "./assets/images/PopupImages/Security.jpg";
-        popupCaption.innerHTML = "Caption: Security headquarters, Resurrection City. John Wiebenson Collection, University of Maryland.";
+        popupCaption.innerHTML = "Security headquarters, Resurrection City. John Wiebenson Collection, University of Maryland.";
         popupUse.innerHTML = "Security staff headquarters"
         popupDescription.innerHTML = "Security was originally handled by the Marshals, a group formed from among the residents of Resurrection City. Conflicts both between the Marshals and residents and within the organization itself around issues of excessive force prompted reforms. A new group, called the Tent City Rangers, was formed to fill in gaps of security and provide different services. A sense of competition, rather than coordination, shaped the dynamics between the Rangers and the Marshals, with negative consequences for the overall security of Resurrection City.";
       } else if (structureName == 'Campaign Leaders Compound') {
         // Campaign Leaders Compound
         popupIcon.src = './assets/icons/City_Hall.png';
-        popupImg.src = "./assets/images/Popupimages/LeadersCompound.jpg";
-        popupCaption.innerHTML = "Caption: City Hall in the process of being built at Resurrection City. Photo by Bernie Boston, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupImg.src = "./assets/images/PopupImages/LeadersCompound.jpg";
+        popupCaption.innerHTML = "City Hall in the process of being built at Resurrection City. Photo by Bernie Boston, Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Leadership residential area";
         popupDescription.innerHTML = "This photograph captures only some of the central leadership in the Poor People's Campaign and Resurrection City in the days leading up to construction. From left, Reies Tijerina, a spokesperson and activist in the Chicano movement and the leader of the Chicano contingent of the SCLC Poor People's March; Clifton Hill, a Native American leader and representative of the Creek tribe in Oklahoma (who left Washington not long after a confrontation with Ralph Abernathy); Rev. Bernard Lafayette, a veteran Civil Rights organizer with SNCC and the SCLC, along with a central planner of the Poor People's Campaign; and Rev. Walter Fauntroy, a Civil Rights veteran and former Congressional delegate for Washington, D.C. (1971-1991), who acted as the liaison between the NPS and federal government and organizers in the Poor People's Campaign. ";
       } else if (structureName == 'God\'s Eye Bakery') {
         // Gods Eye Bakery
         popupIcon.src = './assets/icons/Bakery.png';
-        popupImg.src = "./assets/images/Popupimages/Bakery.jpg";
-        popupCaption.innerHTML = "Caption: Man eats a piece of freshly baked bread at Resurrection City. Evening Star. DC Public Library, the People's Archive, Washington Star Photograph Collection.";
+        popupImg.src = "./assets/images/PopupImages/Bakery.jpg";
+        popupCaption.innerHTML = "Man eats a piece of freshly baked bread at Resurrection City. Evening Star. DC Public Library, the People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Bakery supplying bread to residents";
         popupDescription.innerHTML = "The God's Eye Bakery was set up and operated by volunteers from The Diggers, a radical political collective from San Francisco (but with historical roots in early modern England) that contributed to Resurrection City in the spirit of solidarity and the commons. Volunteers baked fresh bread in recycled coffee cans for residents - working 16 hours a day, the volunteers produced over 2,000 loaves in the first weeks of its operation. ";
       } else if (structureName == 'Child Care') {
         // Day Care
         popupIcon.src = './assets/icons/Child_Care.png';
         popupImg.src = "./assets/images/PopupImages/Daycare.jpg";
-        popupCaption.innerHTML = "Caption: Children play at Resurrection City. Photo by Paul M. Schmick, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupCaption.innerHTML = "Children play at Resurrection City. Photo by Paul M. Schmick, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Child care facilities";
         popupDescription.innerHTML = "Although childcare and a school were part of the original plan for Resurrection City, organizers only had the resources to open a day care center. C's day care was located on Main Street, several yards beyond City Hall towards the Washington Monument. The structure was roughly 20'x6' and housed three separate classrooms, along with a porch running the length of the center. Chairs and tables, along with chalkboards, toys, and clothing, were donated by area charities and churches. Within the building, one room was reserved for infants, with cribs and small beds. The remaining rooms were used by teachers, staff, and students for recreation, lessons, snack time, and naps. Much of the staff were social workers, teachers, childcare workers, and some were SCLC members using their vacation time to be at Resurrection City.";
       } else if (structureName == 'Entertainment Tent') {
         // Entertainment Tent
         popupIcon.src = './assets/icons/Gathering.png';
         popupImg.src = "./assets/images/PopupImages/EntertainmentTent.jpg";
-        popupCaption.innerHTML = "Caption: Nite Lite Poster. Southern Christian Leadership Conference Records, 1962-1969, 1968 June 24 Resurrection City, USA. Emory University Libraries.";
+        popupCaption.innerHTML = "Nite Lite Poster. Southern Christian Leadership Conference Records, 1962-1969, 1968 June 24 Resurrection City, USA. Emory University Libraries.";
         popupUse.innerHTML = "Entertainment tent for residents";
         popupDescription.innerHTML = "Many different musicians, actors, and entertainers passed through Resurrection City over its duration, including Sidney Poitier, Jimmy Collier, Muddy Waters, Dizzy Gillespie, Peter Paul and Mary, and Pete Seeger. Residents also organized entertainment and recreation activities, as this flyer for a full Sunday of family-oriented programming shows.";
       } else if (structureName == 'Department of Sanitation') {
@@ -1266,29 +1304,29 @@ view.on("immediate-click", (event) => {
       } else if (structureName == 'Showers') {
         // Showers
         popupIcon.src = './assets/icons/Showers.png';
-        popupImg.src = "./assets/images/Popupimages/Showers.jpg";
-        popupCaption.innerHTML = "Caption: Two men lay pipe into the ground at Resurrection City. Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupImg.src = "./assets/images/PopupImages/Showers.jpg";
+        popupCaption.innerHTML = "Two men lay pipe into the ground at Resurrection City. Evening Star, 1968. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Shower facilities";
         popupDescription.innerHTML = "Despite ambitious plans to build and operate basic sanitation infrastructure like showers and running water, the limitations of Resurrection City's geography - its low-lying land, under the ownership of the federal government, and the limited duration of the encampment's permit - meant that a functional hygiene system was never put in. Instead, residents were bussed offsite to nearby churches and universities to bathe.";
       } else if (structureName == 'Dining Area') {
         // Dining Area
         popupIcon.src = './assets/icons/Food_Service.png';
         popupImg.src = "./assets/images/PopupImages/DiningTent.JPG";
-        popupCaption.innerHTML = "Caption: Dining tent interior with people eating. Photo by John Vachon, Look Magazine. Library of Congress.";
+        popupCaption.innerHTML = "Dining tent interior with people eating. Photo by John Vachon, Look Magazine. Library of Congress.";
         popupUse.innerHTML = "Main gathering area for food services";
         popupDescription.innerHTML = "The dining tent became a central social and meeting site for residents and organizers throughout the encampment. Despite the strained resources of Resurrection City, which made it impossible to provide hot meals on a regular basis, residents gravitated to the dining tents to socialize over a cup of coffee. John Wiebenson, an architect who was deeply involved in the planning and construction phases of Resurrection City, noted that the many entry points into the dining tent, along with its central location, made it a particularly inviting place for people to come and gather.";
       } else if (structureName == 'Food Storage Trailer') {
         // Food Storage Trailer
         popupIcon.src = './assets/icons/Food_Storage.png';
         popupImg.src = "./assets/images/PopupImages/FoodStorage.jpg";
-        popupCaption.innerHTML = "Caption: Resurrection City's dining tent. Photo by Bernie Boston, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupCaption.innerHTML = "Resurrection City's dining tent. Photo by Bernie Boston, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Refrigerated trailers for onsite food storage";
         popupDescription.innerHTML = "Approximately 25 tons of donated food reached Resurrection City every day to feed residents. One hot meal was prepared in off-site kitchens at Howard University, St. John's High School, and St. Stephen's Church.";
       } else if (structureName == 'Toilet') {
         // Toilets
         popupIcon.src = './assets/icons/Restroom.png';
         popupImg.src = "./assets/images/PopupImages/Toilets.png";
-        popupCaption.innerHTML = "Caption: Truck full of portable bathrooms arrives at Resurrection City. Photo by Ray Lustig, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection";
+        popupCaption.innerHTML = "Truck full of portable bathrooms arrives at Resurrection City. Photo by Ray Lustig, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection";
         popupUse.innerHTML = "Restroom facilities for residents";
         popupDescription.innerHTML = "Portable chemical toilets (twelve in total) were distributed throughout Resurrection City's residential areas, which were formed into compounds composed of nine residential structures (housing roughly 50 people) and an accompanying shower and toilet area.";
       } else if (structureName == 'Construction Warehouse Tent') {
@@ -1297,26 +1335,26 @@ view.on("immediate-click", (event) => {
         popupImg.src = "";
         popupCaption.innerHTML = "";
         popupUse.innerHTML = "Central area for construction supply distribution";
-        popupDescription.innerHTML = "Add Construction Tent Information here.";
+        popupDescription.innerHTML = "540 tents were constructed in Resurrection city over the course of its early weeks. Nicknamed the 'City of a Thousand Designers', residents took charge of building their own shelters and customizing the basic structures with porches, stairs and ladders, and facades. Building supplies, which were largely purchased with donations, were housed in this structure.";
       } else if (structureName == 'City Hall') {
         // City Hall
         popupIcon.src = './assets/icons/City_Hall.png';
         popupImg.src = "./assets/images/PopupImages/CityHall.jpg";
-        popupCaption.innerHTML = "Caption: Reies Tijerina, Clifton Hill, Reverend Bernard Lafayette, and Reverend Walter Fauntroy. Photo by Paul M. Schmick, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupCaption.innerHTML = "Reies Tijerina, Clifton Hill, Reverend Bernard Lafayette, and Reverend Walter Fauntroy. Photo by Paul M. Schmick, Evening Star. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Center of governance for Resurrection City";
         popupDescription.innerHTML = "Located near the center of Main Street, Resurrection City's primary thoroughfare, City Hall served as the symbolic and practical hub of political activity. City Hall was also an important base of operations with electricity and phone access, and a place where residents could organize for daily marches and lobbying efforts. Although much of the SCLC senior staff, including Ralph Abernathy, lived offsite at the nearby Pitt Motel, they spent most of their time onsite in City Hall.";
       } else if (structureName == 'Main Gathering Tent') {
         // Main Gathering Tent
         popupIcon.src = './assets/icons/Gathering.png';
         popupImg.src = "./assets/images/PopupImages/MainGatheringTent.JPG";
-        popupCaption.innerHTML = "Caption: Main Gathering Tent interior. 6/23/1968. Photo by John Vachon, Look Magazine. Library of Congress.";
+        popupCaption.innerHTML = "Main Gathering Tent interior. 6/23/1968. Photo by John Vachon, Look Magazine. Library of Congress.";
         popupUse.innerHTML = "Main gathering area for residents";
         popupDescription.innerHTML = "In the main gathering tent, residents could swap supplies and coordinate plans for off-site meetings and protests.";
       } else if (structureName == 'Information Services / Donations / Art Booth') {
         // Information Services / Donations / Art Booth
         popupIcon.src = './assets/icons/Public_Info.png';
         popupImg.src = './assets/images/Popupimages/InfoTent.jpg';
-        popupCaption.innerHTML = "Caption: Women walking through mud in Resurrection City. Photo by Darrell C. Crain. 6/1/1968. DC Public Library, the People's Archive p35 Darrell C. Crain, Jr. Photograph Collection, 1968 Resurrection City and Solidarity Day";
+        popupCaption.innerHTML = "Women walking through mud in Resurrection City. Photo by Darrell C. Crain. 6/1/1968. DC Public Library, the People's Archive p35 Darrell C. Crain, Jr. Photograph Collection, 1968 Resurrection City and Solidarity Day";
         popupUse.innerHTML = "Donation facilities";
         popupDescription.innerHTML = "Just inside Resurrection's City's entrance, visitors and residents were oriented towards these basic information service areas, as well as a well-stocked donations tent that provided clothing and supplies.";
       } else if (structureName == 'Volunteer Sign-in Booth') {
@@ -1325,7 +1363,7 @@ view.on("immediate-click", (event) => {
         popupImg.src = "";
         popupCaption.innerHTML = "";
         popupUse.innerHTML = "Volunteer marshalling area";
-        popupDescription.innerHTML = "Add Volunteer Sign-in Booth information here.";
+        popupDescription.innerHTML = "Just inside Resurrection's City's entrance, visitors and residents were oriented towards these basic information service areas, as well as a well-stocked donations tent that provided clothing and supplies.";
       } else if (structureName == 'Dental Services') {
         // Dental Services
         popupIcon.src = './assets/icons/Medical.png';
@@ -1337,7 +1375,7 @@ view.on("immediate-click", (event) => {
         // 7th Day Adventist
         popupIcon.src = './assets/icons/Public_Info.png';
         popupImg.src = "./assests/images/Popupimages/SeventhDayAdvent.jpg";
-        popupCaption.innerHTML = "Caption: Seventh-Day Adventist Welfare Service Truck at Resurrection City. Photo by Darrell C. Crain. 6/1/1968. DC Public Library, The People's Archive, p 35 Darrell C. Crain, Jr. Photograph Collection, 1968 Resurrection City and Solidarity Day.";
+        popupCaption.innerHTML = "Seventh-Day Adventist Welfare Service Truck at Resurrection City. Photo by Darrell C. Crain. 6/1/1968. DC Public Library, The People's Archive, p 35 Darrell C. Crain, Jr. Photograph Collection, 1968 Resurrection City and Solidarity Day.";
         popupUse.innerHTML = "Sevent Day Adventists Services";
         popupDescription.innerHTML = "The Seventh-Day Adventist Church provided welfare and medical services in Resurrection City. The organization's mission as an NGO focuses on humanitarian relief efforts around the world.";
       } else if (structureName == 'Public Information Pavilion') {
@@ -1346,7 +1384,7 @@ view.on("immediate-click", (event) => {
         popupImg.src = "";
         popupCaption.innerHTML = "";
         popupUse.innerHTML = "Primary area for public information";
-        popupDescription.innerHTML = "Add Public Info Pavillion information here.";
+        popupDescription.innerHTML = "New residents and visitors (including medical providers, journalists, elected officials, and more) could visit this pavilion near the main entrance to get their bearings in the encampment and connect with officials.";
       } else {
         ""
       };
@@ -1397,17 +1435,17 @@ let highlightHandle;
 
 /***See Camera Coordinates in Console***/
 
-// view.watch('camera.position', function(newValue, oldValue, property, object) {
-//   console.log(property , newValue);
-// });
+view.watch('camera.position', function(newValue, oldValue, property, object) {
+  console.log(property , newValue);
+});
 
-// view.watch('camera.heading', function(newValue, oldValue, property, object) {
-//   console.log(property , newValue);
-// });
+view.watch('camera.heading', function(newValue, oldValue, property, object) {
+  console.log(property , newValue);
+});
 
-// view.watch('camera.tilt', function(newValue, oldValue, property, object) {
-//   console.log(property , newValue);
-// });
+view.watch('camera.tilt', function(newValue, oldValue, property, object) {
+  console.log(property , newValue);
+});
 
 
 /***Start: Timeline animation for both guided tour intro and timeline widget***/
