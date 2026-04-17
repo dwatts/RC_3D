@@ -1159,7 +1159,7 @@ input:checked + .slider:before {
     position: fixed;
     top: 5rem;
     right: -26rem;
-    height: 80%;
+    height: auto;
     width: 25rem;
     background: linear-gradient(var(--Background-Blue), var(--Background-Blue-Alt));
     z-index: 2;
@@ -1181,8 +1181,7 @@ input:checked + .slider:before {
 .map-legend {
   width: 100%;
   height: auto;
-  /* padding-left: 2rem;
-  padding-right: 4rem; */
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: start;

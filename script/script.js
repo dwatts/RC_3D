@@ -1297,8 +1297,9 @@ view.on("immediate-click", (event) => {
       } else if (structureName == 'Medical Unit' || structureName == 'Medical Services') {
         // Medical Services
         popupIcon.src = './assets/icons/Medical.png';
-        popupImg.src = "";
-        popupCaption.innerHTML = "";
+        popupImg.src = "./assets/images/PopupImages/Medical.jpg";
+        popupCaption.innerHTML = "Man carries a child at Resurrection City. 1968. Photo by Paul M. Schmick. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
+        popupUse.innerHTML = "Dental services for residents";
         popupUse.innerHTML = "Medical services for residents";
         popupDescription.innerHTML = "Doctors made rounds starting each morning after breakfast, but on-call care was also available at the two medical units onsite: one owned by the Seventh Day Adventists, and the other by the District of Columbia Health Department. 300 members of the Medical Committee for Human Rights, an organization formed in 1965 by doctors and providers in Selma, provide the encampment's medical care. Everything from routine vaccinations for measles and polio to blood tests and X-rays, along with mental health care, was provided through Resurrection City's medical team.";
       } else if (structureName == 'Showers') {
@@ -1353,7 +1354,7 @@ view.on("immediate-click", (event) => {
       } else if (structureName == 'Information Services / Donations / Art Booth') {
         // Information Services / Donations / Art Booth
         popupIcon.src = './assets/icons/Public_Info.png';
-        popupImg.src = './assets/images/Popupimages/InfoTent.jpg';
+        popupImg.src = './assets/images/PopupImages/InfoTent.jpg';
         popupCaption.innerHTML = "Women walking through mud in Resurrection City. Photo by Darrell C. Crain. 6/1/1968. DC Public Library, the People's Archive p35 Darrell C. Crain, Jr. Photograph Collection, 1968 Resurrection City and Solidarity Day";
         popupUse.innerHTML = "Donation facilities";
         popupDescription.innerHTML = "Just inside Resurrection's City's entrance, visitors and residents were oriented towards these basic information service areas, as well as a well-stocked donations tent that provided clothing and supplies.";
@@ -1367,15 +1368,15 @@ view.on("immediate-click", (event) => {
       } else if (structureName == 'Dental Services') {
         // Dental Services
         popupIcon.src = './assets/icons/Medical.png';
-        popupImg.src = "";
-        popupCaption.innerHTML = "";
+        popupImg.src = "./assets/images/PopupImages/Medical.jpg";
+        popupCaption.innerHTML = "Man carries a child at Resurrection City. 1968. Photo by Paul M. Schmick. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Dental services for residents";
         popupDescription.innerHTML = "Two dental vans provided care to Resurrection City's residents throughout the encampment under the leadership of Dr. Joseph L. Henry, then the Dean of the Howard University School of Dentistry. Volunteer physicians and dentists on duty noted that many members of the Poor People's Campaign had never seen a doctor or dentist before.";
-      } else if (structureName == 'Seventh Day Adventist') {
+      } else if (structureName == 'Seventh Day Adventist Trailer') {
         // 7th Day Adventist
         popupIcon.src = './assets/icons/Public_Info.png';
-        popupImg.src = "./assests/images/Popupimages/SeventhDayAdvent.jpg";
-        popupCaption.innerHTML = "Seventh-Day Adventist Welfare Service Truck at Resurrection City. Photo by Darrell C. Crain. 6/1/1968. DC Public Library, The People's Archive, p 35 Darrell C. Crain, Jr. Photograph Collection, 1968 Resurrection City and Solidarity Day.";
+        popupImg.src = "./assets/images/PopupImages/Adventist.jpg";
+        popupCaption.innerHTML = "Shoes and clothing left in the rain at Resurrection City. 1968. Photo by Joseph Silverman. DC Public Library, The People's Archive, Washington Star Photograph Collection.";
         popupUse.innerHTML = "Sevent Day Adventists Services";
         popupDescription.innerHTML = "The Seventh-Day Adventist Church provided welfare and medical services in Resurrection City. The organization's mission as an NGO focuses on humanitarian relief efforts around the world.";
       } else if (structureName == 'Public Information Pavilion') {
